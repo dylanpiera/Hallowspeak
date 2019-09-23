@@ -1,7 +1,33 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+@font-face {
+    font-family: "Perpetua";
+    src: url("css/Perpetua.ttf")
+}
+
+h1, h2, h3, .navbar-brand {
+    font-family: "Perpetua";
+    text-transform: uppercase;
+    transform: scaleY(1.15);
+}
+
+h1::first-letter, h2::first-letter, h3::first-letter, .navbar-brand::first-letter {
+    font-size: 1.25em;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: black;
+    color: white;
+}
+
+.lexicon-controls {
+    text-align: right;
+}
+
+#lexicon {
+    font-family: "Times New Roman";
+    color: white;
 }
 
 a, .btn-link {
@@ -24,6 +50,7 @@ app {
     height: 3.5rem;
     display: flex;
     align-items: center;
+    background: #181822 !important;
 }
 
 .main {
@@ -31,8 +58,6 @@ app {
 }
 
     .main .top-row {
-        background-color: #f7f7f7;
-        border-bottom: 1px solid #d6d5d5;
         justify-content: flex-end;
     }
 
@@ -41,7 +66,7 @@ app {
         }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: linear-gradient(0deg, #000000 0%, #181822 70%);
 }
 
     .sidebar .top-row {
