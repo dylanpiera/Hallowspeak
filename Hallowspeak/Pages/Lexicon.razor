@@ -1,35 +1,130 @@
 ﻿@page "/lexicon"
 @inject DatabaseHelper databaseHelper
 @inject ILogger<Lexicon> _logger
+@using MySql.Data.MySqlClient
 
 <h3>Lexicon</h3>
-
-<table class="table">
-    <thead>
-        <tr>
-            <AuthorizeView Roles="@(AuthLevel.Writer.ToString()+" ,"+AuthLevel.Administrator.ToString())">
-                <Authorized>
-                    <th scope="col">Word ID</th>
-                </Authorized>
-            </AuthorizeView>
-            @foreach (string row in Data.First().KeyValues.Keys)
+<div class="row" style="padding-bottom: 1rem;">
+    <div class="col">
+        <button class="btn btn-success" @onclick="CreateNew">Add New Word</button>
+    </div>
+</div>
+@if (CreatingNew)
+{
+    <form style="padding-bottom: 1rem;">
+        <div class="form-row">
+            <div class="col">
+                <label for="ID">Suggested Word ID:</label>
+                <input id="ID" type="number" class="form-control" disabled value="@NewItem.Id" />
+            </div>
+        </div>
+        <div class="form-row">
+            @foreach (var pair in NewItem.KeyValues)
             {
-                <th scope="col">@row</th>
+                <div class="col-sm-12 col-lg-2">
+                    <label for="@pair.Key">@pair.Key.Replace('_', ' '):</label>
+                    <input id="@pair.Key" type="text" class="form-control" placeholder="@pair.Key.Replace('_', ' ')" @bind=pair.Value.Value />
+                </div>
             }
-        </tr>
-    </thead>
-    <tbody>
-
-        @foreach (var item in Data)
-        {
-            <LexiconRow ColID="@item.Id.ToString()" RowContent="@item" />
-        }
-
-    </tbody>
-</table>
+        </div>
+        <div class="form-row" style="padding-top: 1rem;">
+            <div class="col">
+                <button class="btn btn-primary" @onclick=SubmitNewItem>Submit</button>
+            </div>
+        </div>
+    </form>
+}
+<div class="row">
+    <table class="table">
+        <thead>
+            <tr>
+                <AuthorizeView Roles="@(AuthLevel.Writer.ToString()+" ,"+AuthLevel.Administrator.ToString())">
+                    <Authorized>
+                        <th scope="col">Word ID</th>
+                    </Authorized>
+                </AuthorizeView>
+                @foreach (string row in Data.First().KeyValues.Keys)
+                {
+                    <th scope="col">@row</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Data)
+            {
+                <LexiconRow ColID="@item.Id.ToString()" RowContent="@item" />
+            }
+        </tbody>
+    </table>
+</div>
 
 @code {
+    public bool CreatingNew { get; set; } = false;
+
+    private LexiconItem NewItem { get; set; } = null;
+
     private List<LexiconItem> Data { get; set; }
+
+    void CreateNew()
+    {
+        CreatingNew = true;
+        NewItem = new LexiconItem(Data.Last().Id + 1) { KeyValues = new Dictionary<string, LexiconValue>() };
+        foreach (var col in Data.First().KeyValues.Keys)
+        {
+            NewItem.KeyValues.Add(col, new LexiconValue(""));
+        }
+    }
+
+    void SubmitNewItem()
+    {
+        CreatingNew = false;
+        Task.Run(async () =>
+        {
+            if (databaseHelper.Enabled)
+            {
+                MySqlConnection conn = databaseHelper.GetConnection();
+                try
+                {
+                    await conn.OpenAsync();
+
+                    MySqlCommand cmd = new MySqlCommand();
+                    string commandstring = $"INSERT INTO `Lexicon` ";
+                    foreach (var item in NewItem.KeyValues.Keys)
+                    {
+                        commandstring += $"`{item}`, ";
+                    }
+
+                    commandstring = commandstring.Substring(0, commandstring.Length - 2) + ") VALUES (";
+
+                    foreach (var item in NewItem.KeyValues)
+                    {
+                        commandstring += $"@{item.Key}, ";
+                        cmd.Parameters.AddWithValue(item.Key, item.Value.Value);
+                    }
+                    commandstring = commandstring.Substring(0, commandstring.Length - 2) + ")";
+
+                    cmd.CommandText = commandstring;
+                    cmd.Connection = conn;
+
+                    await cmd.ExecuteNonQueryAsync();
+
+                    Data.Add(NewItem);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.ToString());
+                }
+                finally
+                {
+                    await conn.CloseAsync();
+                }
+            }
+            else
+            {
+                Data.Add(NewItem);
+            }
+        });
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,7 +146,7 @@
                     Data[i].KeyValues.Add("4", new LexiconValue("Example"));
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.LogError(e.ToString());
             }
