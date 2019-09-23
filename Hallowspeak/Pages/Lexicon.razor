@@ -105,15 +105,49 @@
         }
     }
 
-    void BulkSubmit() => throw new NotImplementedException();
+    /// <summary>
+    /// Parse and submit new Items from Bulk Import
+    /// </summary>
+    void BulkSubmit()
+    {
+        BulkImport = false;
+        var keys = Data.First().KeyValues.Keys;
+        foreach (string[] values in BulkInput.Split('\n').Select(line => line.Split('\t')))
+        {
+            // Skip entry if more values than keys
+            if (keys.Count < values.Length) continue;
+
+            LexiconItem newItem = new LexiconItem(Data.Last().Id + 1);
+            int currentValueIndex = 0;
+            foreach (string key in keys)
+            {
+                try
+                {
+                    newItem.KeyValues.Add(key, new LexiconValue(values[currentValueIndex++]));
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    // Not all columns filled
+                }
+            }
+            AddItemToDB(newItem);
+        }
+    }
 
     /// <summary>
-    /// Submit new Item to the DB
+    /// Submit single new Item
     /// </summary>
     void SubmitNewItem()
     {
         CreatingNew = false;
-        #region Submit to DB
+        AddItemToDB(NewItem);
+    }
+
+    /// <summary>
+    /// Submit new Item to the DB
+    /// </summary>
+    private void AddItemToDB(LexiconItem newItem)
+    {
         Task.Run(async () =>
         {
             if (databaseHelper.Enabled)
@@ -144,7 +178,7 @@
 
                     await cmd.ExecuteNonQueryAsync();
 
-                    Data.Add(NewItem);
+                    Data.Add(newItem);
                 }
                 catch (Exception e)
                 {
@@ -157,10 +191,9 @@
             }
             else
             {
-                Data.Add(NewItem);
+                Data.Add(newItem);
             }
         });
-        #endregion
     }
 
     protected override async Task OnInitializedAsync()
