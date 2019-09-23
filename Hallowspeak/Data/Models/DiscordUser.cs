@@ -9,5 +9,14 @@ namespace Hallowspeak.Data.Models
     {
         public string UserID { get; set; }
         public string Username { get; set; }
+
+        public AuthLevel AuthLevel { get; set; }
+    }
+
+    public enum AuthLevel
+    {
+        User = 0,
+        Writer = 1,
+        Administrator = 2
     }
 }

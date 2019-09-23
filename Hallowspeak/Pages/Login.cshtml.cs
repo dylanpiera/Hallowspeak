@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Hallowspeak.Data.Models;
+using Hallowspeak.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 
 namespace Hallowspeak.Pages
@@ -20,13 +22,13 @@ namespace Hallowspeak.Pages
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private NavigationManager NavigationManager { get; set; }
+        private DatabaseHelper DatabaseHelper { get; set; }
         private DiscordClientCredentials DiscordClientCredentials { get; set; }
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(NavigationManager navigationManager, DiscordClientCredentials discordClientCredentials, ILogger<LoginModel> logger)
+        public LoginModel(DatabaseHelper databaseHelper, DiscordClientCredentials discordClientCredentials, ILogger<LoginModel> logger)
         {
-            NavigationManager = navigationManager;
+            DatabaseHelper = databaseHelper;
             DiscordClientCredentials = discordClientCredentials;
             _logger = logger;
         }
@@ -48,14 +50,52 @@ namespace Hallowspeak.Pages
             // *** !!! This is where you would validate the user !!! ***
             // In this example we just log the user in
             // (Always log the user in for this demo)
-            _logger.LogDebug("Test!");
             DiscordUser discordUser = await LoginUser(code);
 
+            #region UserLevel
+            if (DatabaseHelper.Enabled)
+            {
+                MySqlConnection conn = DatabaseHelper.GetConnection();
+                try
+                {
+                    await conn.OpenAsync();
 
+                    MySqlCommand cmd = new MySqlCommand("SELECT `authlevel` FROM `Users` WHERE `uuid` = @uuid", conn);
+                    cmd.Parameters.AddWithValue("@uuid", discordUser.UserID);
+
+                    using (MySqlDataReader reader = (MySqlDataReader)await cmd.ExecuteReaderAsync())
+                    {
+                        int authlevel = 0;
+
+                        while (await reader.ReadAsync())
+                        {
+                            authlevel = reader.GetInt32(0);
+                        }
+
+                        discordUser.AuthLevel = (AuthLevel) authlevel;
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.ToString());
+                }
+                finally
+                {
+                    await conn.CloseAsync();
+                }
+            }
+            else
+            {
+                discordUser.AuthLevel = AuthLevel.Administrator;
+            }
+            #endregion
+
+            #region AspNetCore Authentication
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, discordUser.Username),
-                new Claim(ClaimTypes.Role, "Administrator"),
+                new Claim(ClaimTypes.Role, discordUser.AuthLevel.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, discordUser.UserID)
             };
             var claimsIdentity = new ClaimsIdentity(
                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -75,6 +115,8 @@ namespace Hallowspeak.Pages
             {
                 string error = ex.Message;
             }
+            #endregion
+
             return LocalRedirect(returnUrl);
         }
 
