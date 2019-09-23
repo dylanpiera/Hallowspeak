@@ -30,6 +30,11 @@ html, body {
     color: white;
 }
 
+#lexicon .blazor-context-menu {
+    background: #181822;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 a, .btn-link {
     color: #0366d6;
 }
