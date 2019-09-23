@@ -7,10 +7,16 @@ using System.Threading.Tasks;
 
 namespace Hallowspeak.Helpers
 {
+    /// <summary>
+    /// Contains Reusable functions for Database Operations.
+    /// </summary>
     public class DatabaseHelper
     {
 
         private readonly string _server, _user, _pass;
+        /// <summary>
+        /// If no Database Credentials are available, this bool can be checked to make sure no unnecessary slowdowns/errors are produced.
+        /// </summary>
         public readonly bool Enabled;
 
 #nullable enable
@@ -30,6 +36,10 @@ namespace Hallowspeak.Helpers
         }
 #nullable disable
 
+        /// <summary>
+        /// Get a Closed DB connection.
+        /// </summary>
+        /// <returns>A Copy of a Closed DB Connection</returns>
         public MySqlConnection GetConnection()
         {
             string connStr = $"Server={_server};Uid={_user};Database=Hallowspeak;port=3306;Password={_pass};SslMode=none;CharSet=utf8mb4;Connect Timeout=1";
@@ -37,6 +47,9 @@ namespace Hallowspeak.Helpers
             return conn;
         }
 
+        /// <summary>
+        /// Pull all Lexicon Data from the DB.
+        /// </summary>
         public async Task<List<LexiconItem>> GetLexiconItemsFromDB(MySqlConnection conn)
         {
             List<LexiconItem> output = new List<LexiconItem>();

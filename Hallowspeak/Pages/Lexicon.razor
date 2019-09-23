@@ -19,6 +19,7 @@
             </div>
         </div>
         <div class="form-row">
+            <!-- For each Column in the DB Structure create a field for the new item processing. -->
             @foreach (var pair in NewItem.KeyValues)
             {
                 <div class="col-sm-12 col-lg-2">
@@ -38,6 +39,7 @@
     <table class="table">
         <thead>
             <tr>
+                <!-- Display all columns from the DB Structure -->
                 <AuthorizeView Roles="@(AuthLevel.Writer.ToString()+" ,"+AuthLevel.Administrator.ToString())">
                     <Authorized>
                         <th scope="col">Word ID</th>
@@ -45,13 +47,13 @@
                 </AuthorizeView>
                 @foreach (string row in Data.First().KeyValues.Keys)
                 {
-                    <th scope="col">@row</th>
+                    <th scope="col">@row.Replace('_', ' ')</th>
                 }
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Data)
-            {
+            { //Display all Table Rows
                 <LexiconRow ColID="@item.Id.ToString()" RowContent="@item" />
             }
         </tbody>
@@ -63,8 +65,14 @@
 
     private LexiconItem NewItem { get; set; } = null;
 
+    /// <summary>
+    /// A List containing all Rows of data in the Lexicon.
+    /// </summary>
     private List<LexiconItem> Data { get; set; }
 
+    /// <summary>
+    /// Prepares a new form for adding a new word.
+    /// </summary>
     void CreateNew()
     {
         CreatingNew = true;
@@ -75,9 +83,13 @@
         }
     }
 
+    /// <summary>
+    /// Submit new Item to the DB
+    /// </summary>
     void SubmitNewItem()
     {
         CreatingNew = false;
+        #region Submit to DB
         Task.Run(async () =>
         {
             if (databaseHelper.Enabled)
@@ -124,6 +136,7 @@
                 Data.Add(NewItem);
             }
         });
+    #endregion
     }
 
     protected override async Task OnInitializedAsync()
@@ -134,6 +147,7 @@
         }
         else
         {
+            /* If no DB connection is possible, generate some example items for local testing. */
             try
             {
                 Data = new List<LexiconItem>();

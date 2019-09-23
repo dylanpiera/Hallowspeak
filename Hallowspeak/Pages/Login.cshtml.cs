@@ -46,12 +46,10 @@ namespace Hallowspeak.Pages
             }
             catch { }
 
-
-            // *** !!! This is where you would validate the user !!! ***
-            // In this example we just log the user in
-            // (Always log the user in for this demo)
+            /* Prepares data for Cookie */
             DiscordUser discordUser = await LoginUser(code);
 
+            /* Fetches AuthLevel from the DB if it exists. */
             #region UserLevel
             if (DatabaseHelper.Enabled)
             {
@@ -90,6 +88,7 @@ namespace Hallowspeak.Pages
             }
             #endregion
 
+            /* Prepares the necessary claims for AspNetCore Cookie-based Identity */
             #region AspNetCore Authentication
             var claims = new List<Claim>
             {
@@ -120,6 +119,11 @@ namespace Hallowspeak.Pages
             return LocalRedirect(returnUrl);
         }
 
+        /// <summary>
+        /// Oauth Discord Login
+        /// </summary>
+        /// <param name="code">oAuth Return Code from Discord</param>
+        /// <returns>Data from the logged in User</returns>
         private async Task<DiscordUser> LoginUser(string code)
         {
             _logger.LogDebug("Test!");

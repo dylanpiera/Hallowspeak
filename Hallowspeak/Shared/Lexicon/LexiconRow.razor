@@ -2,51 +2,52 @@
 @inject ILogger<LexiconRow> _logger
 @using MySql.Data.MySqlClient
 
-    <ContextMenu Id="@ColID">
-        <Item OnClick="@OnEdit">Edit Row</Item>
-        <Item OnClick="@OnDelete" CssClass="btn btn-danger delete-item">Delete Row</Item>
-    </ContextMenu>
+<!-- The right click menu -->
+<ContextMenu Id="@ColID">
+    <Item OnClick="@OnEdit">Edit Row</Item>
+    <Item OnClick="@OnDelete" CssClass="btn btn-danger delete-item">Delete Row</Item>
+</ContextMenu>
 
 @if (!Destroyed)
 {
-<AuthorizeView Roles="@(AuthLevel.Writer.ToString() + "," + AuthLevel.Administrator.ToString())">
-    <Authorized>
-        <tr>
-            <ContextMenuTrigger MenuId="@ColID">
-                <th scope="row">@ColID</th>
+    <AuthorizeView Roles="@(AuthLevel.Writer.ToString() + "," + AuthLevel.Administrator.ToString())">
+        <Authorized>
+            <tr>
+                <ContextMenuTrigger MenuId="@ColID">
+                    <th scope="row">@ColID</th>
+                    @foreach (var item in RowContent.KeyValues.Values)
+                    {
+                        <td>@item.Value</td>
+                    }
+                </ContextMenuTrigger>
+            </tr>
+            @if (Editing)
+            {
+                <tr>
+                    <th scope="row"><button @onclick=Submit>Submit Changes</button></th>
+                    @foreach (var item in RowContent.KeyValues.Values)
+                    {
+                        <td><input type="text" @bind=item.Value /></td>
+                    }
+                </tr>
+            }
+            else if (Deleting)
+            {
+                <tr>
+                    <td class="delete-item" colspan="@(RowContent.KeyValues.Values.Count + 1)"><b style="color: ghostwhite;">Are you sure you wish to delete this row?</b> <button class="btn btn-danger" @onclick="DeleteItem">Delete</button> <button class="btn btn-secondary" @onclick="(() => Deleting = false)">Cancel</button></td>
+                </tr>
+            }
+
+        </Authorized>
+        <NotAuthorized>
+            <tr>
                 @foreach (var item in RowContent.KeyValues.Values)
                 {
                     <td>@item.Value</td>
                 }
-            </ContextMenuTrigger>
-        </tr>
-        @if (Editing)
-        {
-            <tr>
-                <th scope="row"><button @onclick=Submit>Submit Changes</button></th>
-                @foreach (var item in RowContent.KeyValues.Values)
-                {
-                    <td><input type="text" @bind=item.Value /></td>
-                }
             </tr>
-        }
-        else if (Deleting)
-        {
-            <tr>
-                <td class="delete-item" colspan="@(RowContent.KeyValues.Values.Count + 1)"><b style="color: ghostwhite;">Are you sure you wish to delete this row?</b> <button class="btn btn-danger" @onclick="DeleteItem">Delete</button> <button class="btn btn-secondary" @onclick="(() => Deleting = false)">Cancel</button></td>
-            </tr>
-        }
-
-    </Authorized>
-    <NotAuthorized>
-        <tr>
-            @foreach (var item in RowContent.KeyValues.Values)
-            {
-                <td>@item.Value</td>
-            }
-        </tr>
-    </NotAuthorized>
-</AuthorizeView>
+        </NotAuthorized>
+    </AuthorizeView>
 }
 
 @code  {
@@ -77,6 +78,7 @@
         Deleting = false;
         Destroyed = true;
 
+        #region Delete from DB
         Task.Run(async () =>
         {
             if (databaseHelper.Enabled)
@@ -101,12 +103,14 @@
                 }
             }
         });
+        #endregion
     }
 
     void Submit()
     {
         Editing = false;
 
+        #region Submit to Database
         Task.Run(async () =>
         {
             if (databaseHelper.Enabled)
@@ -141,5 +145,6 @@
                 }
             }
         });
+        #endregion
     }
 }
