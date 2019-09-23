@@ -148,3 +148,8 @@ app {
         display: block;
     }
 }
+
+.discord-oauth {
+    color: #fff;
+    background-color: #7289da;
+}
