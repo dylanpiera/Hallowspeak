@@ -87,7 +87,7 @@ namespace Hallowspeak.Pages
                 HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("https://discordapp.com/api/oauth2/token");
                 webRequest.Method = "POST";
                 webRequest.ContentType = "application/x-www-form-urlencoded";
-                string parameters = "client_id=" + DiscordClientCredentials.ClientID + "&client_secret=" + DiscordClientCredentials.ClientSecret + "&grant_type=authorization_code&code=" + code + "&redirect_uri=" + $"{Request.Scheme}://{Request.Host}{Request.Path}";
+                string parameters = "client_id=" + DiscordClientCredentials.ClientID + "&client_secret=" + DiscordClientCredentials.ClientSecret + "&grant_type=authorization_code&code=" + code + "&redirect_uri=" + $"https://{Request.Host}{Request.Path}";
                 _logger.LogDebug(parameters);
                 byte[] byteArray = Encoding.UTF8.GetBytes(parameters);
                 webRequest.ContentLength = byteArray.Length;
