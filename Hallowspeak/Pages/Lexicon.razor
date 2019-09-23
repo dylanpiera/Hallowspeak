@@ -125,9 +125,9 @@
                 {
                     newItem.KeyValues.Add(key, new LexiconValue(values[currentValueIndex++]));
                 }
-                catch (IndexOutOfRangeException)
+                catch (IndexOutOfRangeException) // Not all columns filled
                 {
-                    // Not all columns filled
+                    newItem.KeyValues.Add(key, new LexiconValue(string.Empty));
                 }
             }
             AddItemToDB(newItem);
