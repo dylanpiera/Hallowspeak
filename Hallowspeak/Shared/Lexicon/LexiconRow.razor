@@ -59,7 +59,7 @@
 
         Task.Run(async () =>
         {
-            if (!databaseHelper.Enabled)
+            if (databaseHelper.Enabled)
             {
                 MySqlConnection conn = databaseHelper.GetConnection();
                 try

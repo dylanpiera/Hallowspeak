@@ -1,0 +1,33 @@
+
+@font-face {
+    font-family: "Perpetua";
+    src: url("Perpetua.ttf");
+}
+
+h1 {
+    font-size: 70px;
+    text-transform: uppercase;
+    transform: scaleY(1.15);
+}
+
+h1::first-letter {
+    font-size: 90px;
+}
+
+body {
+    text-align: center;
+    background-color: black;
+    color: white;
+    font-family: "Perpetua";
+}
+
+p {
+    font-size: 35px;
+}
+
+#lore-tablet {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    max-width: 40%;
+}
