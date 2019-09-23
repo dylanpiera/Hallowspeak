@@ -25,6 +25,15 @@ html, body {
     text-align: right;
 }
 
+#lexicon-container {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+button {
+    margin-bottom: 0.5em;
+}
+
 #lexicon {
     font-family: "Times New Roman";
     color: white;
