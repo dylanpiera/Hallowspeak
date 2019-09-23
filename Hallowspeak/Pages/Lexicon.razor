@@ -1,23 +1,60 @@
 ﻿@page "/lexicon"
+@inject DatabaseHelper databaseHelper
+@inject ILogger<Lexicon> _logger
 
 <h3>Lexicon</h3>
 
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">1</th>
-            <th scope="col">2</th>
-            <th scope="col">3</th>
-            <th scope="col">4</th>
+            <AuthorizeView Roles="@(AuthLevel.Writer.ToString()+" ,"+AuthLevel.Administrator.ToString())">
+                <Authorized>
+                    <th scope="col">Word ID</th>
+                </Authorized>
+            </AuthorizeView>
+            @foreach (string row in Data.First().KeyValues.Keys)
+            {
+                <th scope="col">@row</th>
+            }
         </tr>
     </thead>
     <tbody>
-        <LexiconRow ColID="0" Values="@example.ToArray()">
 
-        </LexiconRow>
+        @foreach (var item in Data)
+        {
+            <LexiconRow ColID="@item.Id.ToString()" Values="@item.KeyValues.Values.ToList()" />
+        }
+
     </tbody>
 </table>
 
 @code {
-    List<string> example = new List<string>() {"This", "is", "an", "Example"};
+    private List<LexiconItem> Data { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (databaseHelper.Enabled)
+        {
+            Data = await databaseHelper.GetLexiconItemsFromDB(databaseHelper.GetConnection());
+        }
+        else
+        {
+            try
+            {
+                Data = new List<LexiconItem>();
+                for (int i = 0; i < 5; i++)
+                {
+                    Data.Add(new LexiconItem(i) { KeyValues = new Dictionary<string, string>() });
+                    Data[i].KeyValues.Add("1", "This");
+                    Data[i].KeyValues.Add("2", "is");
+                    Data[i].KeyValues.Add("3", "an");
+                    Data[i].KeyValues.Add("4", "Example");
+                }
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(e.ToString());
+            }
+        }
+    }
 }

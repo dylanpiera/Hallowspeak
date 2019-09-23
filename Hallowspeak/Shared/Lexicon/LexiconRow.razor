@@ -2,25 +2,72 @@
     <Item OnClick="@OnClick">Edit</Item>
 </ContextMenu>
 
-<tr>
-    <ContextMenuTrigger MenuId="@ColID">
-        <th scope="row">1</th>
-        @foreach (string item in Values)
+<AuthorizeView Roles="@(AuthLevel.Writer.ToString()+","+AuthLevel.Administrator.ToString())">
+    <Authorized>
+        <tr>
+            <ContextMenuTrigger MenuId="@ColID">
+                <th scope="row">@ColID</th>
+                @foreach (var item in RowContent)
+                {
+                    <td>@item.Value</td>
+                }
+            </ContextMenuTrigger>
+        </tr>
+        @if (Editing)
         {
-            <td>@item</td>
+            <tr>
+                <th scope="row"><button @onclick=Submit>Submit Changes</button></th>
+                @foreach (var item in RowContent)
+                {
+                    <td><input type="text" @bind=item.Value /></td>
+                }
+            </tr>
         }
-    </ContextMenuTrigger>
-</tr>
+    </Authorized>
+    <NotAuthorized>
+        <tr>
+            @foreach (var item in RowContent)
+            {
+                <td>@item.Value</td>
+            }
+        </tr>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code  {
+
+    public bool Editing { get; set; } = false;
+
     [Parameter]
     public string ColID { get; set; }
 
     [Parameter]
-    public string[] Values { get; set; }
+    public List<string> Values { get; set; }
+
+    private List<RowItem> RowContent { get; set; } = new List<RowItem>();
+
+    protected override void OnInitialized()
+    {
+        foreach (var item in Values)
+        {
+            RowContent.Add(new RowItem() { Value = item });
+        }
+    }
 
     void OnClick(ItemClickEventArgs e)
     {
+        Editing = true;
+    }
 
+    void Submit()
+    {
+        Editing = false;
+
+        //Actually submit to the database.
+    }
+
+    class RowItem
+    {
+        public string Value { get; set; }
     }
 }
