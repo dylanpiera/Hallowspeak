@@ -1,0 +1,24 @@
+﻿@page "/loginControl"
+@inject DiscordClientCredentials Credentials
+@inject NavigationManager NavigationManager
+<AuthorizeView>
+    <Authorized>
+        <b>Hello, @context.User.Identity.Name!</b>
+        <a class="ml-md-auto btn btn-primary"
+           href="/logout?returnUrl=/"
+           target="_top">Logout</a>
+    </Authorized>
+    <NotAuthorized>
+        <a class="ml-md-auto btn btn-primary discord-oauth" href="@DiscordURI">Login with Discord</a>
+        <!--Response.Redirect("https://discordapp.com/api/oauth2/authorize?response_type=code&client_id=" + client_id + "&scope=identify&redirect_uri=" + $"{Request.WebsiteUrl()}{Request.Path}");-->
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+
+    string DiscordURI = "";
+
+    protected override void OnInitialized()
+    {
+        DiscordURI = $"https://discordapp.com/api/oauth2/authorize?response_type=code&client_id={Credentials.ClientID}&scope=identify&redirect_uri={NavigationManager.BaseUri}login";
+    }
+}
