@@ -130,7 +130,7 @@
                     newItem.KeyValues.Add(key, new LexiconValue(string.Empty));
                 }
             }
-            AddItemToDB(newItem);
+            Task.Run(async () => await AddItemToDB(newItem));
         }
     }
 
@@ -140,59 +140,56 @@
     void SubmitNewItem()
     {
         CreatingNew = false;
-        AddItemToDB(NewItem);
+        Task.Run(async () => await AddItemToDB(NewItem));
     }
 
     /// <summary>
     /// Submit new Item to the DB
     /// </summary>
-    private void AddItemToDB(LexiconItem newItem)
+    private async Task AddItemToDB(LexiconItem newItem)
     {
-        Task.Run(async () =>
+
+        if (databaseHelper.Enabled)
         {
-            if (databaseHelper.Enabled)
+            MySqlConnection conn = databaseHelper.GetConnection();
+            try
             {
-                MySqlConnection conn = databaseHelper.GetConnection();
-                try
+                await conn.OpenAsync();
+
+                MySqlCommand cmd = new MySqlCommand();
+                string commandstring = $"INSERT INTO `Lexicon` (";
+                foreach (var item in NewItem.KeyValues.Keys)
                 {
-                    await conn.OpenAsync();
-
-                    MySqlCommand cmd = new MySqlCommand();
-                    string commandstring = $"INSERT INTO `Lexicon` (";
-                    foreach (var item in NewItem.KeyValues.Keys)
-                    {
-                        commandstring += $"`{item}`, ";
-                    }
-
-                    commandstring = commandstring.Substring(0, commandstring.Length - 2) + ") VALUES (";
-
-                    foreach (var item in NewItem.KeyValues)
-                    {
-                        commandstring += $"@{item.Key}, ";
-                        cmd.Parameters.AddWithValue(item.Key, item.Value.Value);
-                    }
-                    commandstring = commandstring.Substring(0, commandstring.Length - 2) + ")";
-
-                    cmd.CommandText = commandstring;
-                    cmd.Connection = conn;
-
-                    await cmd.ExecuteNonQueryAsync();
-
-                    //Data.Add(newItem);
+                    commandstring += $"`{item}`, ";
                 }
-                catch (Exception e)
+
+                commandstring = commandstring.Substring(0, commandstring.Length - 2) + ") VALUES (";
+
+                foreach (var item in NewItem.KeyValues)
                 {
-                    _logger.LogError(e.ToString());
+                    commandstring += $"@{item.Key}, ";
+                    cmd.Parameters.AddWithValue(item.Key, item.Value.Value);
                 }
-                finally
-                {
-                    await conn.CloseAsync();
-                    await OnInitializedAsync();
-                    this.StateHasChanged();
-                }
+                commandstring = commandstring.Substring(0, commandstring.Length - 2) + ")";
+
+                cmd.CommandText = commandstring;
+                cmd.Connection = conn;
+
+                await cmd.ExecuteNonQueryAsync();
+
+                //Data.Add(newItem);
             }
-
-        });
+            catch (Exception e)
+            {
+                _logger.LogError(e.ToString());
+            }
+            finally
+            {
+                await conn.CloseAsync();
+                await OnInitializedAsync();
+                this.StateHasChanged();
+            }
+        }
     }
 
     protected override async Task OnInitializedAsync()
