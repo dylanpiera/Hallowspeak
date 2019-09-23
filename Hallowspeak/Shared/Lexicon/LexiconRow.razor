@@ -2,11 +2,14 @@
 @inject ILogger<LexiconRow> _logger
 @using MySql.Data.MySqlClient
 
-<ContextMenu Id="@ColID">
-    <Item OnClick="@OnClick">Edit</Item>
-</ContextMenu>
+    <ContextMenu Id="@ColID">
+        <Item OnClick="@OnEdit">Edit Row</Item>
+        <Item OnClick="@OnDelete" CssClass="btn btn-danger delete-item">Delete Row</Item>
+    </ContextMenu>
 
-<AuthorizeView Roles="@(AuthLevel.Writer.ToString()+","+AuthLevel.Administrator.ToString())">
+@if (!Destroyed)
+{
+<AuthorizeView Roles="@(AuthLevel.Writer.ToString() + "," + AuthLevel.Administrator.ToString())">
     <Authorized>
         <tr>
             <ContextMenuTrigger MenuId="@ColID">
@@ -27,6 +30,13 @@
                 }
             </tr>
         }
+        else if (Deleting)
+        {
+            <tr>
+                <td class="delete-item" colspan="@(RowContent.KeyValues.Values.Count + 1)"><b style="color: ghostwhite;">Are you sure you wish to delete this row?</b> <button class="btn btn-danger" @onclick="DeleteItem">Delete</button> <button class="btn btn-secondary" @onclick="(() => Deleting = false)">Cancel</button></td>
+            </tr>
+        }
+
     </Authorized>
     <NotAuthorized>
         <tr>
@@ -37,10 +47,13 @@
         </tr>
     </NotAuthorized>
 </AuthorizeView>
+}
 
 @code  {
 
     public bool Editing { get; set; } = false;
+    public bool Deleting { get; set; } = false;
+    public bool Destroyed { get; set; } = false;
 
     [Parameter]
     public string ColID { get; set; }
@@ -48,9 +61,46 @@
     [Parameter]
     public LexiconItem RowContent { get; set; }
 
-    void OnClick(ItemClickEventArgs e)
+    void OnEdit(ItemClickEventArgs e)
     {
         Editing = true;
+        Deleting = false;
+    }
+    void OnDelete(ItemClickEventArgs e)
+    {
+        Editing = false;
+        Deleting = true;
+    }
+
+    void DeleteItem()
+    {
+        Deleting = false;
+        Destroyed = true;
+
+        Task.Run(async () =>
+        {
+            if (databaseHelper.Enabled)
+            {
+                MySqlConnection conn = databaseHelper.GetConnection();
+                try
+                {
+                    await conn.OpenAsync();
+
+                    MySqlCommand cmd = new MySqlCommand("DELETE FROM `Lexicon` WHERE `Id`=@Id", conn);
+                    cmd.Parameters.AddWithValue("@Id", RowContent.Id);
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.ToString());
+                }
+                finally
+                {
+                    await conn.CloseAsync();
+                }
+            }
+        });
     }
 
     void Submit()
@@ -67,14 +117,17 @@
                     await conn.OpenAsync();
 
                     MySqlCommand cmd = new MySqlCommand();
-                    string commandstring = $"UPDATE `lexicon` SET ";
+                    string commandstring = $"UPDATE `Lexicon` SET ";
                     foreach (var item in RowContent.KeyValues)
                     {
-                        commandstring += $"`{item.Key}`=@{item.Key}";
+                        commandstring += $"`{item.Key}`=@{item.Key},";
                         cmd.Parameters.AddWithValue(item.Key, item.Value.Value);
                     }
-                    commandstring += "WHERE `Id`=@Id";
+
+                    commandstring = commandstring.Substring(0, commandstring.Length - 1) + " WHERE `Id`=@Id";
                     cmd.CommandText = commandstring;
+                    cmd.Connection = conn;
+                    cmd.Parameters.AddWithValue("@Id", RowContent.Id);
 
                     await cmd.ExecuteNonQueryAsync();
                 }
