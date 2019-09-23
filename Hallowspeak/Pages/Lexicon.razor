@@ -88,7 +88,7 @@
                     await conn.OpenAsync();
 
                     MySqlCommand cmd = new MySqlCommand();
-                    string commandstring = $"INSERT INTO `Lexicon` ";
+                    string commandstring = $"INSERT INTO `Lexicon` (";
                     foreach (var item in NewItem.KeyValues.Keys)
                     {
                         commandstring += $"`{item}`, ";
