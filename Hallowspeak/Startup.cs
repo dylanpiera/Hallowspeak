@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 using Hallowspeak.Data.Models;
+using Hallowspeak.Helpers;
 
 namespace Hallowspeak
 {
@@ -44,6 +45,7 @@ namespace Hallowspeak
                 ClientID = Configuration["HallowSpeak:DiscordClientID"],
                 ClientSecret = Configuration["HallowSpeak:DiscordClientSecret"]
             });
+            services.AddSingleton(typeof(DatabaseHelper), new DatabaseHelper(Configuration["HallowSpeak:DatabaseServer"], Configuration["HallowSpeak:DatabaseUser"], Configuration["HallowSpeak:DatabasePass"]));
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
