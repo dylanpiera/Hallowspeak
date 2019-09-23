@@ -1,4 +1,8 @@
-﻿<ContextMenu Id="@ColID">
+﻿@inject DatabaseHelper databaseHelper
+@inject ILogger<LexiconRow> _logger
+@using MySql.Data.MySqlClient
+
+<ContextMenu Id="@ColID">
     <Item OnClick="@OnClick">Edit</Item>
 </ContextMenu>
 
@@ -7,7 +11,7 @@
         <tr>
             <ContextMenuTrigger MenuId="@ColID">
                 <th scope="row">@ColID</th>
-                @foreach (var item in RowContent)
+                @foreach (var item in RowContent.KeyValues.Values)
                 {
                     <td>@item.Value</td>
                 }
@@ -17,7 +21,7 @@
         {
             <tr>
                 <th scope="row"><button @onclick=Submit>Submit Changes</button></th>
-                @foreach (var item in RowContent)
+                @foreach (var item in RowContent.KeyValues.Values)
                 {
                     <td><input type="text" @bind=item.Value /></td>
                 }
@@ -26,7 +30,7 @@
     </Authorized>
     <NotAuthorized>
         <tr>
-            @foreach (var item in RowContent)
+            @foreach (var item in RowContent.KeyValues.Values)
             {
                 <td>@item.Value</td>
             }
@@ -42,17 +46,7 @@
     public string ColID { get; set; }
 
     [Parameter]
-    public List<string> Values { get; set; }
-
-    private List<RowItem> RowContent { get; set; } = new List<RowItem>();
-
-    protected override void OnInitialized()
-    {
-        foreach (var item in Values)
-        {
-            RowContent.Add(new RowItem() { Value = item });
-        }
-    }
+    public LexiconItem RowContent { get; set; }
 
     void OnClick(ItemClickEventArgs e)
     {
@@ -63,11 +57,36 @@
     {
         Editing = false;
 
-        //Actually submit to the database.
-    }
+        Task.Run(async () =>
+        {
+            if (!databaseHelper.Enabled)
+            {
+                MySqlConnection conn = databaseHelper.GetConnection();
+                try
+                {
+                    await conn.OpenAsync();
 
-    class RowItem
-    {
-        public string Value { get; set; }
+                    MySqlCommand cmd = new MySqlCommand();
+                    string commandstring = $"UPDATE `lexicon` SET ";
+                    foreach (var item in RowContent.KeyValues)
+                    {
+                        commandstring += $"`{item.Key}`=@{item.Key}";
+                        cmd.Parameters.AddWithValue(item.Key, item.Value.Value);
+                    }
+                    commandstring += "WHERE `Id`=@Id";
+                    cmd.CommandText = commandstring;
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.ToString());
+                }
+                finally
+                {
+                    await conn.CloseAsync();
+                }
+            }
+        });
     }
 }

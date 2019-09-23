@@ -53,7 +53,7 @@ namespace Hallowspeak.Helpers
                         LexiconItem item = new LexiconItem(reader.GetInt32(0));
                         for (int i = 1; i < reader.FieldCount; i++)
                         {
-                            item.KeyValues.Add(reader.GetName(i),reader.GetString(i));
+                            item.KeyValues.Add(reader.GetName(i),new LexiconValue(reader.GetString(i)));
                         }
                         output.Add(item);
                     }

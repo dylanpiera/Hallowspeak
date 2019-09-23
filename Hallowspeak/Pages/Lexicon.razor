@@ -22,7 +22,7 @@
 
         @foreach (var item in Data)
         {
-            <LexiconRow ColID="@item.Id.ToString()" Values="@item.KeyValues.Values.ToList()" />
+            <LexiconRow ColID="@item.Id.ToString()" RowContent="@item" />
         }
 
     </tbody>
@@ -44,11 +44,11 @@
                 Data = new List<LexiconItem>();
                 for (int i = 0; i < 5; i++)
                 {
-                    Data.Add(new LexiconItem(i) { KeyValues = new Dictionary<string, string>() });
-                    Data[i].KeyValues.Add("1", "This");
-                    Data[i].KeyValues.Add("2", "is");
-                    Data[i].KeyValues.Add("3", "an");
-                    Data[i].KeyValues.Add("4", "Example");
+                    Data.Add(new LexiconItem(i) { KeyValues = new Dictionary<string, LexiconValue>() });
+                    Data[i].KeyValues.Add("1", new LexiconValue("This"));
+                    Data[i].KeyValues.Add("2", new LexiconValue("is"));
+                    Data[i].KeyValues.Add("3", new LexiconValue("an"));
+                    Data[i].KeyValues.Add("4", new LexiconValue("Example"));
                 }
             }
             catch(Exception e)
