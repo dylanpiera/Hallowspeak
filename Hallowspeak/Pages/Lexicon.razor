@@ -3,15 +3,19 @@
 @inject ILogger<Lexicon> _logger
 @using MySql.Data.MySqlClient
 
-<div class="row" style="padding-bottom: 1rem;">
-    <div class="col">
-        <h3>Lexicon</h3>
-    </div>
-    <div class="col lexicon-controls">
-        <button class="btn btn-success" @onclick="CreateNew">Add New Word</button>
-        <button class="btn btn-success" @onclick="() => BulkImport = true">Bulk Import</button>
-    </div>
-</div>
+<AuthorizeView>
+    <Authorized>
+        <div class="row" style="padding-bottom: 1rem;">
+            <div class="col">
+                <h3>Lexicon</h3>
+            </div>
+            <div class="col lexicon-controls">
+                <button class="btn btn-success" @onclick="CreateNew">Add New Word</button>
+                <button class="btn btn-success" @onclick="() => BulkImport = true">Bulk Import</button>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
 @if (BulkImport)
 {
     <form style="padding-bottom: 1rem;">
