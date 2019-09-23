@@ -1,0 +1,92 @@
+﻿@inject DatabaseHelper databaseHelper
+@inject ILogger<LexiconRow> _logger
+@using MySql.Data.MySqlClient
+
+<ContextMenu Id="@ColID">
+    <Item OnClick="@OnClick">Edit</Item>
+</ContextMenu>
+
+<AuthorizeView Roles="@(AuthLevel.Writer.ToString()+","+AuthLevel.Administrator.ToString())">
+    <Authorized>
+        <tr>
+            <ContextMenuTrigger MenuId="@ColID">
+                <th scope="row">@ColID</th>
+                @foreach (var item in RowContent.KeyValues.Values)
+                {
+                    <td>@item.Value</td>
+                }
+            </ContextMenuTrigger>
+        </tr>
+        @if (Editing)
+        {
+            <tr>
+                <th scope="row"><button @onclick=Submit>Submit Changes</button></th>
+                @foreach (var item in RowContent.KeyValues.Values)
+                {
+                    <td><input type="text" @bind=item.Value /></td>
+                }
+            </tr>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <tr>
+            @foreach (var item in RowContent.KeyValues.Values)
+            {
+                <td>@item.Value</td>
+            }
+        </tr>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code  {
+
+    public bool Editing { get; set; } = false;
+
+    [Parameter]
+    public string ColID { get; set; }
+
+    [Parameter]
+    public LexiconItem RowContent { get; set; }
+
+    void OnClick(ItemClickEventArgs e)
+    {
+        Editing = true;
+    }
+
+    void Submit()
+    {
+        Editing = false;
+
+        Task.Run(async () =>
+        {
+            if (!databaseHelper.Enabled)
+            {
+                MySqlConnection conn = databaseHelper.GetConnection();
+                try
+                {
+                    await conn.OpenAsync();
+
+                    MySqlCommand cmd = new MySqlCommand();
+                    string commandstring = $"UPDATE `lexicon` SET ";
+                    foreach (var item in RowContent.KeyValues)
+                    {
+                        commandstring += $"`{item.Key}`=@{item.Key}";
+                        cmd.Parameters.AddWithValue(item.Key, item.Value.Value);
+                    }
+                    commandstring += "WHERE `Id`=@Id";
+                    cmd.CommandText = commandstring;
+
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.ToString());
+                }
+                finally
+                {
+                    await conn.CloseAsync();
+                }
+            }
+        });
+    }
+}
