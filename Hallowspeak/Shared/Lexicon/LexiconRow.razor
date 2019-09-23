@@ -1,0 +1,26 @@
+﻿<ContextMenu Id="@ColID">
+    <Item OnClick="@OnClick">Edit</Item>
+</ContextMenu>
+
+<tr>
+    <ContextMenuTrigger MenuId="@ColID">
+        <th scope="row">1</th>
+        @foreach (string item in Values)
+        {
+            <td>@item</td>
+        }
+    </ContextMenuTrigger>
+</tr>
+
+@code  {
+    [Parameter]
+    public string ColID { get; set; }
+
+    [Parameter]
+    public string[] Values { get; set; }
+
+    void OnClick(ItemClickEventArgs e)
+    {
+
+    }
+}

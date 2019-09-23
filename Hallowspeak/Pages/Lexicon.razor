@@ -1,0 +1,23 @@
+﻿@page "/lexicon"
+
+<h3>Lexicon</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">1</th>
+            <th scope="col">2</th>
+            <th scope="col">3</th>
+            <th scope="col">4</th>
+        </tr>
+    </thead>
+    <tbody>
+        <LexiconRow ColID="0" Values="@example.ToArray()">
+
+        </LexiconRow>
+    </tbody>
+</table>
+
+@code {
+    List<string> example = new List<string>() {"This", "is", "an", "Example"};
+}
