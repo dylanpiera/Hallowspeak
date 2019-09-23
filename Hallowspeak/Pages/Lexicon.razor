@@ -158,14 +158,14 @@
 
                 MySqlCommand cmd = new MySqlCommand();
                 string commandstring = $"INSERT INTO `Lexicon` (";
-                foreach (var item in NewItem.KeyValues.Keys)
+                foreach (var item in newItem.KeyValues.Keys)
                 {
                     commandstring += $"`{item}`, ";
                 }
 
                 commandstring = commandstring.Substring(0, commandstring.Length - 2) + ") VALUES (";
 
-                foreach (var item in NewItem.KeyValues)
+                foreach (var item in newItem.KeyValues)
                 {
                     commandstring += $"@{item.Key}, ";
                     cmd.Parameters.AddWithValue(item.Key, item.Value.Value);
