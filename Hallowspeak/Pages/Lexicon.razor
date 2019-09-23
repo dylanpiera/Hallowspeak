@@ -7,8 +7,26 @@
 <div class="row" style="padding-bottom: 1rem;">
     <div class="col">
         <button class="btn btn-success" @onclick="CreateNew">Add New Word</button>
+        <button class="btn btn-success" @onclick="() => BulkImport = true">Bulk Import</button>
     </div>
 </div>
+@if (BulkImport)
+{
+    <form style="padding-bottom: 1rem;">
+        <div class="form-row">
+            <div class="col">
+                <label for="bulk-input">Copy and paste from the Google Sheet here:</label>
+                <br />
+                <textarea id="bulk-input" @bind=BulkInput />
+            </div>
+        </div>
+        <div class="form-row" style="padding-top: 1rem;">
+            <div class="col">
+                <button class="btn btn-primary" @onclick=BulkSubmit>Submit</button>
+            </div>
+        </div>
+    </form>
+}
 @if (CreatingNew)
 {
     <form style="padding-bottom: 1rem;">
@@ -63,7 +81,11 @@
 @code {
     public bool CreatingNew { get; set; } = false;
 
+    public bool BulkImport { get; set; } = false;
+
     private LexiconItem NewItem { get; set; } = null;
+
+    private string BulkInput { get; set; } = string.Empty;
 
     /// <summary>
     /// A List containing all Rows of data in the Lexicon.
@@ -84,12 +106,48 @@
     }
 
     /// <summary>
-    /// Submit new Item to the DB
+    /// Parse and submit new Items from Bulk Import
+    /// </summary>
+    void BulkSubmit()
+    {
+        BulkImport = false;
+        var keys = Data.First().KeyValues.Keys;
+        foreach (string[] values in BulkInput.Split('\n').Select(line => line.Split('\t')))
+        {
+            // Skip entry if more values than keys
+            if (keys.Count < values.Length) continue;
+
+            LexiconItem newItem = new LexiconItem(Data.Last().Id + 1);
+            int currentValueIndex = 0;
+            foreach (string key in keys)
+            {
+                try
+                {
+                    newItem.KeyValues.Add(key, new LexiconValue(values[currentValueIndex++]));
+                }
+                catch (IndexOutOfRangeException) // Not all columns filled
+                {
+                    newItem.KeyValues.Add(key, new LexiconValue(string.Empty));
+                }
+            }
+            AddItemToDB(newItem);
+        }
+    }
+
+    /// <summary>
+    /// Submit single new Item
     /// </summary>
     void SubmitNewItem()
     {
         CreatingNew = false;
-        #region Submit to DB
+        AddItemToDB(NewItem);
+    }
+
+    /// <summary>
+    /// Submit new Item to the DB
+    /// </summary>
+    private void AddItemToDB(LexiconItem newItem)
+    {
         Task.Run(async () =>
         {
             if (databaseHelper.Enabled)
@@ -120,7 +178,7 @@
 
                     await cmd.ExecuteNonQueryAsync();
 
-                    Data.Add(NewItem);
+                    //Data.Add(newItem);
                 }
                 catch (Exception e)
                 {
@@ -129,14 +187,12 @@
                 finally
                 {
                     await conn.CloseAsync();
+                    await OnInitializedAsync();
+                    this.StateHasChanged();
                 }
             }
-            else
-            {
-                Data.Add(NewItem);
-            }
+
         });
-    #endregion
     }
 
     protected override async Task OnInitializedAsync()
@@ -154,10 +210,11 @@
                 for (int i = 0; i < 5; i++)
                 {
                     Data.Add(new LexiconItem(i) { KeyValues = new Dictionary<string, LexiconValue>() });
-                    Data[i].KeyValues.Add("1", new LexiconValue("This"));
-                    Data[i].KeyValues.Add("2", new LexiconValue("is"));
-                    Data[i].KeyValues.Add("3", new LexiconValue("an"));
-                    Data[i].KeyValues.Add("4", new LexiconValue("Example"));
+                    Data[i].KeyValues.Add("10", new LexiconValue("This"));
+                    Data[i].KeyValues.Add("20", new LexiconValue("is"));
+                    Data[i].KeyValues.Add("30", new LexiconValue("an"));
+                    Data[i].KeyValues.Add("40", new LexiconValue("Example"));
+                    Data[i].KeyValues.Add("50", new LexiconValue("just for good measure"));
                 }
             }
             catch (Exception e)
