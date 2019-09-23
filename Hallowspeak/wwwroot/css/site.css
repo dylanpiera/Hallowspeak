@@ -178,3 +178,18 @@ div.table-body {
 div[oncontextmenu] {
     display: contents !important;
 }
+
+td.delete-item {
+    background-color: rgba(174, 41, 41, 0.80);
+}
+li.delete-item:hover {
+    background-color: rgba(174, 41, 41, 0.80);
+}
+
+td.new-item {
+    background-color: rgba(62, 169, 93, 0.80);
+}
+
+li.new-item:hover {
+    background-color: rgba(62, 169, 93, 0.80);
+}
