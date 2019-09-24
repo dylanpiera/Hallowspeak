@@ -2,7 +2,13 @@
 
 @font-face {
     font-family: "Perpetua";
-    src: url("css/Perpetua.ttf")
+    font-weight: normal;
+    font-style: normal;
+    src:
+        url('css/font/Perpetua.eot?#iefix') format('embedded-opentype'),
+        url('css/font/Perpetua.woff') format('woff'),
+        url('css/font/Perpetua.ttf')  format('truetype'),
+        url('css/font/Perpetua.svg#Perpetua') format('svg');
 }
 
 h1, h2, h3, .navbar-brand {
