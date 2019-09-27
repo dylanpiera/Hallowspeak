@@ -71,7 +71,9 @@
                 </AuthorizeView>
                 @foreach (string row in Data.First().KeyValues.Keys)
                 {
-                    <th scope="col">@row.Replace('_', ' ')</th>
+                    <th scope="col">
+                        <a @onclick="() => SortLexiconBy(row)">@row.Replace('_', ' ')</a>
+                    </th>
                 }
             </tr>
         </thead>
@@ -97,6 +99,15 @@
     /// A List containing all Rows of data in the Lexicon.
     /// </summary>
     private List<LexiconItem> Data { get; set; }
+
+    /// <summary>
+    /// Sorts the Lexicon List by given Key
+    /// </summary>
+    void SortLexiconBy(string key)
+    {
+        Data = Data.OrderBy(entry => entry.KeyValues[key].Value).ToList();
+        this.StateHasChanged();
+    }
 
     /// <summary>
     /// Prepares a new form for adding a new word.
