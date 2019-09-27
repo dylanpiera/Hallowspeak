@@ -95,6 +95,10 @@
 
     private string BulkInput { get; set; } = string.Empty;
 
+    private string LastSortKey { get; set; } = string.Empty;
+
+    private bool SortedDescending { get; set; } = true;
+
     /// <summary>
     /// A List containing all Rows of data in the Lexicon.
     /// </summary>
@@ -105,7 +109,17 @@
     /// </summary>
     void SortLexiconBy(string key)
     {
-        Data = Data.OrderBy(entry => entry.KeyValues[key].Value).ToList();
+        if (LastSortKey != key || SortedDescending)
+        {
+            Data = Data.OrderBy(entry => entry.KeyValues[key].Value).ToList();
+            SortedDescending = false;
+        }
+        else
+        {
+            Data = Data.OrderByDescending(entry => entry.KeyValues[key].Value).ToList();
+            SortedDescending = true;
+        }
+        LastSortKey = key;
         this.StateHasChanged();
     }
 
@@ -224,11 +238,11 @@
                 for (int i = 0; i < 5; i++)
                 {
                     Data.Add(new LexiconItem(i) { KeyValues = new Dictionary<string, LexiconValue>() });
-                    Data[i].KeyValues.Add("10", new LexiconValue("This"));
-                    Data[i].KeyValues.Add("20", new LexiconValue("is"));
-                    Data[i].KeyValues.Add("30", new LexiconValue("an"));
-                    Data[i].KeyValues.Add("40", new LexiconValue("Example"));
-                    Data[i].KeyValues.Add("50", new LexiconValue("just for good measure"));
+                    Data[i].KeyValues.Add("10", new LexiconValue($"{i} This"));
+                    Data[i].KeyValues.Add("20", new LexiconValue($"{i} is"));
+                    Data[i].KeyValues.Add("30", new LexiconValue($"{i} an"));
+                    Data[i].KeyValues.Add("40", new LexiconValue($"{i} Example"));
+                    Data[i].KeyValues.Add("50", new LexiconValue($"{i} just for good measure"));
                 }
             }
             catch (Exception e)
