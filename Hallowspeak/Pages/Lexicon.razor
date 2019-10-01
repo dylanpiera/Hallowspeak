@@ -237,12 +237,13 @@
                 Data = new List<LexiconItem>();
                 for (int i = 0; i < 5; i++)
                 {
+                    Random rand = new Random();
                     Data.Add(new LexiconItem(i) { KeyValues = new Dictionary<string, LexiconValue>() });
-                    Data[i].KeyValues.Add("10", new LexiconValue($"{i} This"));
-                    Data[i].KeyValues.Add("20", new LexiconValue($"{i} is"));
-                    Data[i].KeyValues.Add("30", new LexiconValue($"{i} an"));
-                    Data[i].KeyValues.Add("40", new LexiconValue($"{i} Example"));
-                    Data[i].KeyValues.Add("50", new LexiconValue($"{i} just for good measure"));
+                    Data[i].KeyValues.Add("10", new LexiconValue($"{i * rand.Next()} This"));
+                    Data[i].KeyValues.Add("20", new LexiconValue($"{i * rand.Next()} is"));
+                    Data[i].KeyValues.Add("30", new LexiconValue($"{i * rand.Next()} an"));
+                    Data[i].KeyValues.Add("40", new LexiconValue($"{i * rand.Next()} Example"));
+                    Data[i].KeyValues.Add("50", new LexiconValue($"{i * rand.Next()} just for good measure"));
                 }
             }
             catch (Exception e)
