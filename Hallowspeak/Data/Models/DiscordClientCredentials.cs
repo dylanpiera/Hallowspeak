@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Hallowspeak.Data.Models
+﻿namespace Hallowspeak.Data.Models
 {
     /// <summary>
     /// Used for OAuth Project Authentication
@@ -12,5 +7,7 @@ namespace Hallowspeak.Data.Models
     {
         public string ClientID { get; set; }
         public string ClientSecret { get; set; }
+
+        public string ContactWebhookUrl { get; set; }
     }
 }
