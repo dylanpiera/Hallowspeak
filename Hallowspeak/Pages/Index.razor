@@ -4,9 +4,15 @@
     <Authorized>
         Welcome @context.User.Identity.Name!<br />
         Role: @context.User.Claims.FirstOrDefault(x => x.Type == System.Security.Claims.ClaimTypes.Role).Value.ToString()<br />
-        ID: @context.User.Claims.FirstOrDefault(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value.ToString()        
+        ID: @context.User.Claims.FirstOrDefault(x => x.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value.ToString()
     </Authorized>
     <NotAuthorized>
-        Welcome!
+        <div class="row justify-content-center" style="text-align: center;">
+            <div class="column">
+                <h2>Welcome to HallowSpeak.com</h2>
+                <p>Hey there! Currently our website is still in development, but be sure to check back later when we have more information about HallowSpeak!</p>
+            </div>
+        </div>
+        
     </NotAuthorized>
 </AuthorizeView>

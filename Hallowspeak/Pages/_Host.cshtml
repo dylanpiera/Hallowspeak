@@ -7,7 +7,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hallowspeak</title>
+    <meta property="og:title" content="@Title" />
+    <meta property="og:description" content="@Desc"/>
+    <meta property="og:url" content="https://hallowspeak.com" />
+    <meta property="og:image" content="https://hallowspeak.com/img/HallowSpeakLogo.png" />
+    <title>@Title</title>
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
@@ -22,3 +26,8 @@
     <script src="_content/Blazor.ContextMenu/blazorContextMenu.min.js"></script>
 </body>
 </html>
+
+@functions {
+    public string Title { get; set; } = "HallowSpeak";
+    public string Desc { get; set; } = "Team HallowSpeak presents to you: HallowSpeak a Hollow Knight Conlang...";
+}
