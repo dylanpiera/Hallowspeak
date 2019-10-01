@@ -1,3 +1,13 @@
+using Hallowspeak.Data.Models;
+using Hallowspeak.Helpers;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -5,17 +15,6 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Hallowspeak.Data.Models;
-using Hallowspeak.Helpers;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
-using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
 
 namespace Hallowspeak.Pages
 {
@@ -70,7 +69,7 @@ namespace Hallowspeak.Pages
                             authlevel = reader.GetInt32(0);
                         }
 
-                        discordUser.AuthLevel = (AuthLevel) authlevel;
+                        discordUser.AuthLevel = (AuthLevel)authlevel;
                     }
                 }
                 catch (Exception e)
