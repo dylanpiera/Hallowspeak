@@ -39,7 +39,8 @@ namespace Hallowspeak
             services.AddSingleton(typeof(DiscordClientCredentials), new DiscordClientCredentials()
             {
                 ClientID = Configuration["HallowSpeak:DiscordClientID"],
-                ClientSecret = Configuration["HallowSpeak:DiscordClientSecret"]
+                ClientSecret = Configuration["HallowSpeak:DiscordClientSecret"],
+                ContactWebhookUrl = Configuration["HallowSpeak:ContactWebhookUrl"]
             });
             services.AddSingleton(typeof(DatabaseHelper), new DatabaseHelper(Configuration["HallowSpeak:DatabaseServer"], Configuration["HallowSpeak:DatabaseUser"], Configuration["HallowSpeak:DatabasePass"]));
 

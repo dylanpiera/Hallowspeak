@@ -1,5 +1,6 @@
-@page "/contact"
+﻿@page "/contact"
 @page "/contact-us"
+@inject DiscordClientCredentials credentials
 
 <div class="row">
     <div class="col">
@@ -107,12 +108,10 @@
             return;
         }
 
-
-
         var client = new RestClient("https://ptb.discordapp.com/api/");
         var request = new RestRequest(" webhooks/{id}", Method.POST);
 
-        request.AddUrlSegment("id", "628585959579189254/8wYxltxmkxBC1ieNeropKrCNMEIb96S57qYC9gHw07TnU1sw7IgfWmxc5W0Ojzo0DPSE");
+        request.AddUrlSegment("id", credentials.ContactWebhookUrl);
 
         string MessageBy = TypeOfReply switch
         {
