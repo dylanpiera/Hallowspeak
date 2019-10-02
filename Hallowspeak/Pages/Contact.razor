@@ -2,8 +2,8 @@
 @page "/contact-us"
 @inject DiscordClientCredentials credentials
 @inject HttpContextAccessor httpContextAccessor
-@using System.Collections.Generic
-@using System.Net
+@inject Floodchecker floodchecker
+@using System.Net;
 @using Microsoft.AspNetCore.Http.Features
 
 <div class="row">
@@ -82,8 +82,6 @@
     private (bool, string) ErrorMessage { get; set; }
     private (bool, string)? Success { get; set; }
 
-    private HashSet<IPAddress> IpBlackList = new HashSet<IPAddress>();
-
     private enum ContactType
     {
         None,
@@ -116,7 +114,7 @@
 
         IPAddress clientIp = httpContextAccessor.HttpContext.Features.Get<IHttpConnectionFeature>().RemoteIpAddress;
 
-        if (IpBlackList.Contains(clientIp))
+        if (floodchecker.IsTimedOut(clientIp))
         {
             Success = (false, "Whoops! Seems like you've already just sent a message. Please try again later!");
             return;
@@ -150,9 +148,7 @@
                 InvokeAsync(StateHasChanged);
             });
 
-            IpBlackList.Add(clientIp);
-
-            Task.Run(async () => { await Task.Delay(new TimeSpan(0, 1, 0)); IpBlackList.Remove(clientIp); });
+            floodchecker.Timeout(clientIp);
         }
         catch
         {
