@@ -73,7 +73,7 @@
                 @foreach (string row in Data.First().KeyValues.Keys)
                 {
                     <th scope="col">
-                        <a @onclick="() => SortLexiconBy(row)">@row.Replace('_', ' ') @(row == LastSortKey ? (SortedDescending ? "↑" : "↓") : "")</a>
+                        <a @onclick="() => SortLexiconBy(row)">@row.Replace('_', ' ') @(row == LastSortKey ? (SortedDescending ? "↑" : "↓") : "↕")</a>
                     </th>
                 }
             </tr>
