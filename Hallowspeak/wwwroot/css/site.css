@@ -4,11 +4,13 @@
     font-family: "Perpetua";
     font-weight: normal;
     font-style: normal;
+    src: url('font/Perpetua.eot');
     src:
-        url('css/font/Perpetua.eot?#iefix') format('embedded-opentype'),
-        url('css/font/Perpetua.woff') format('woff'),
-        url('css/font/Perpetua.ttf')  format('truetype'),
-        url('css/font/Perpetua.svg#Perpetua') format('svg');
+        url('font/Perpetua.eot?#iefix') format('embedded-opentype'),
+        url('font/Perpetua.woff2') format('woff2'),
+        url('font/Perpetua.woff') format('woff'),
+        url('font/Perpetua.ttf') format('truetype'),
+        url('font/Perpetua.svg#Perpetua') format('svg');
 }
 
 h1, h2, h3, .navbar-brand {

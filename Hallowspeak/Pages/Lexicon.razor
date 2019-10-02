@@ -1,6 +1,7 @@
 ﻿@page "/lexicon"
 @inject DatabaseHelper databaseHelper
 @inject ILogger<Lexicon> _logger
+@using System
 @using MySql.Data.MySqlClient
 
 <div class="row" style="padding-bottom: 1rem;">
@@ -71,7 +72,9 @@
                 </AuthorizeView>
                 @foreach (string row in Data.First().KeyValues.Keys)
                 {
-                    <th scope="col">@row.Replace('_', ' ')</th>
+                    <th scope="col">
+                        <a @onclick="() => SortLexiconBy(row)">@row.Replace('_', ' ') <span style="@(row == LastSortKey ? "font-weight: bold; color: white;" : "color: #4e4e4e;")">@(row == LastSortKey ? (SortedDescending ? "↑" : "↓") : "↕")</span></a>
+                    </th>
                 }
             </tr>
         </thead>
@@ -93,10 +96,39 @@
 
     private string BulkInput { get; set; } = string.Empty;
 
+    private string LastSortKey { get; set; } = string.Empty;
+
+    private bool SortedDescending { get; set; } = true;
+
     /// <summary>
     /// A List containing all Rows of data in the Lexicon.
     /// </summary>
     private List<LexiconItem> Data { get; set; }
+
+    /// <summary>
+    /// Sorts the Lexicon List by given Key
+    /// </summary>
+    void SortLexiconBy(string key)
+    {
+        if (LastSortKey != key || SortedDescending)
+        {
+            Data = Data.OrderBy(
+                entry => entry.KeyValues[key].Value,
+                StringComparer.InvariantCultureIgnoreCase
+            ).ToList();
+            SortedDescending = false;
+        }
+        else
+        {
+            Data = Data.OrderByDescending(
+                entry => entry.KeyValues[key].Value,
+                StringComparer.InvariantCultureIgnoreCase
+            ).ToList();
+            SortedDescending = true;
+        }
+        LastSortKey = key;
+        this.StateHasChanged();
+    }
 
     /// <summary>
     /// Prepares a new form for adding a new word.
@@ -212,12 +244,13 @@
                 Data = new List<LexiconItem>();
                 for (int i = 0; i < 5; i++)
                 {
+                    Random rand = new Random();
                     Data.Add(new LexiconItem(i) { KeyValues = new Dictionary<string, LexiconValue>() });
-                    Data[i].KeyValues.Add("10", new LexiconValue("This"));
-                    Data[i].KeyValues.Add("20", new LexiconValue("is"));
-                    Data[i].KeyValues.Add("30", new LexiconValue("an"));
-                    Data[i].KeyValues.Add("40", new LexiconValue("Example"));
-                    Data[i].KeyValues.Add("50", new LexiconValue("just for good measure"));
+                    Data[i].KeyValues.Add("10", new LexiconValue($"{i * rand.Next()} This"));
+                    Data[i].KeyValues.Add("20", new LexiconValue($"{i * rand.Next()} is"));
+                    Data[i].KeyValues.Add("30", new LexiconValue($"{i * rand.Next()} an"));
+                    Data[i].KeyValues.Add("40", new LexiconValue($"{i * rand.Next()} Example"));
+                    Data[i].KeyValues.Add("50", new LexiconValue($"{i * rand.Next()} just for good measure"));
                 }
             }
             catch (Exception e)
