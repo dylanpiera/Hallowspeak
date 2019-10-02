@@ -47,6 +47,8 @@ namespace Hallowspeak
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<HttpContextAccessor>();
+            services.AddSingleton<Floodchecker>();
 
             #region Blazor Cookie Auth
             services.AddHttpContextAccessor();

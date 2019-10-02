@@ -1,6 +1,10 @@
 ﻿@page "/contact"
 @page "/contact-us"
 @inject DiscordClientCredentials credentials
+@inject HttpContextAccessor httpContextAccessor
+@inject Floodchecker floodchecker
+@using System.Net
+@using Microsoft.AspNetCore.Http.Features
 
 <div class="row">
     <div class="col">
@@ -108,6 +112,14 @@
             return;
         }
 
+        IPAddress clientIp = httpContextAccessor.HttpContext.Features.Get<IHttpConnectionFeature>().RemoteIpAddress;
+
+        if (floodchecker.IsTimedOut(clientIp))
+        {
+            Success = (false, "Whoops! Seems like you've already just sent a message. Please try again later!");
+            return;
+        }
+
         var client = new RestClient("https://ptb.discordapp.com/api/");
         var request = new RestRequest(" webhooks/{id}", Method.POST);
 
@@ -135,6 +147,8 @@
                 Message = string.Empty;
                 InvokeAsync(StateHasChanged);
             });
+
+            floodchecker.Timeout(clientIp);
         }
         catch
         {
