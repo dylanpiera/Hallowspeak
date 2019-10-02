@@ -1,6 +1,10 @@
 ﻿@page "/contact"
 @page "/contact-us"
 @inject DiscordClientCredentials credentials
+@inject HttpContextAccessor httpContextAccessor
+@using System.Collections.Generic
+@using System.Net
+@using Microsoft.AspNetCore.Http.Features
 
 <div class="row">
     <div class="col">
@@ -78,6 +82,8 @@
     private (bool, string) ErrorMessage { get; set; }
     private (bool, string)? Success { get; set; }
 
+    private HashSet<IPAddress> IpBlackList = new HashSet<IPAddress>();
+
     private enum ContactType
     {
         None,
@@ -108,6 +114,14 @@
             return;
         }
 
+        IPAddress clientIp = httpContextAccessor.HttpContext.Features.Get<IHttpConnectionFeature>().RemoteIpAddress;
+
+        if (IpBlackList.Contains(clientIp))
+        {
+            Success = (false, "Whoops! Seems like you've already just sent a message. Please try again later!");
+            return;
+        }
+
         var client = new RestClient("https://ptb.discordapp.com/api/");
         var request = new RestRequest(" webhooks/{id}", Method.POST);
 
@@ -135,6 +149,10 @@
                 Message = string.Empty;
                 InvokeAsync(StateHasChanged);
             });
+
+            IpBlackList.Add(clientIp);
+
+            Task.Run(async () => { await Task.Delay(new TimeSpan(0, 1, 0)); IpBlackList.Remove(clientIp); });
         }
         catch
         {
