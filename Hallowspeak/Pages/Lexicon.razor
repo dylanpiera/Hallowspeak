@@ -1,6 +1,7 @@
 ﻿@page "/lexicon"
 @inject DatabaseHelper databaseHelper
 @inject ILogger<Lexicon> _logger
+@using System
 @using MySql.Data.MySqlClient
 
 <div class="row" style="padding-bottom: 1rem;">
@@ -111,12 +112,18 @@
     {
         if (LastSortKey != key || SortedDescending)
         {
-            Data = Data.OrderBy(entry => entry.KeyValues[key].Value).ToList();
+            Data = Data.OrderBy(
+                entry => entry.KeyValues[key].Value,
+                StringComparer.InvariantCultureIgnoreCase
+            ).ToList();
             SortedDescending = false;
         }
         else
         {
-            Data = Data.OrderByDescending(entry => entry.KeyValues[key].Value).ToList();
+            Data = Data.OrderByDescending(
+                entry => entry.KeyValues[key].Value,
+                StringComparer.InvariantCultureIgnoreCase
+            ).ToList();
             SortedDescending = true;
         }
         LastSortKey = key;
