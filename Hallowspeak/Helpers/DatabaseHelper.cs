@@ -2,7 +2,6 @@
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hallowspeak.Helpers
@@ -58,7 +57,7 @@ namespace Hallowspeak.Helpers
                 await conn.OpenAsync();
 
                 MySqlCommand cmd = new MySqlCommand("SELECT * FROM `Lexicon`", conn);
-                
+
                 using (MySqlDataReader reader = (MySqlDataReader)await cmd.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
@@ -66,13 +65,13 @@ namespace Hallowspeak.Helpers
                         LexiconItem item = new LexiconItem(reader.GetInt32(0));
                         for (int i = 1; i < reader.FieldCount; i++)
                         {
-                            item.KeyValues.Add(reader.GetName(i),new LexiconValue(reader.GetString(i)));
+                            item.KeyValues.Add(reader.GetName(i), new LexiconValue(reader.GetString(i)));
                         }
                         output.Add(item);
                     }
                 }
             }
-            catch (Exception e)
+            catch 
             {
 
             }

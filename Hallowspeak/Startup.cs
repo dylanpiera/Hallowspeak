@@ -1,20 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Hallowspeak.Data;
+using Hallowspeak.Data.Models;
+using Hallowspeak.Helpers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Hallowspeak.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using System.Net.Http;
-using Hallowspeak.Data.Models;
-using Hallowspeak.Helpers;
 
 namespace Hallowspeak
 {
@@ -45,13 +39,16 @@ namespace Hallowspeak
             services.AddSingleton(typeof(DiscordClientCredentials), new DiscordClientCredentials()
             {
                 ClientID = Configuration["HallowSpeak:DiscordClientID"],
-                ClientSecret = Configuration["HallowSpeak:DiscordClientSecret"]
+                ClientSecret = Configuration["HallowSpeak:DiscordClientSecret"],
+                ContactWebhookUrl = Configuration["HallowSpeak:ContactWebhookUrl"]
             });
             services.AddSingleton(typeof(DatabaseHelper), new DatabaseHelper(Configuration["HallowSpeak:DatabaseServer"], Configuration["HallowSpeak:DatabaseUser"], Configuration["HallowSpeak:DatabasePass"]));
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<HttpContextAccessor>();
+            services.AddSingleton<Floodchecker>();
 
             #region Blazor Cookie Auth
             services.AddHttpContextAccessor();

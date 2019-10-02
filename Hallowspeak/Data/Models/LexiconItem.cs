@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Hallowspeak.Data.Models
 {
@@ -14,7 +11,7 @@ namespace Hallowspeak.Data.Models
         /// Word UID, also used for the database.
         /// </summary>
         public int Id { get; private set; }
-        
+
         /// <summary>
         /// To generalize the Database Structure, and not have to worry about changing said structure,
         /// the data pulled from the database is stored in a Dictionary, where the Key is the name of the DB Column
