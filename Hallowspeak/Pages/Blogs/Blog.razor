@@ -1,0 +1,38 @@
+﻿@page "/blogs/{Id:int}"
+@page "/blogs"
+
+@if (_loading)
+{
+    @if (Id.HasValue)
+    {
+
+    }
+    else
+    {
+
+    }
+}
+else
+{
+    <div class="loading-box"><span>Loading...</span><div class="loading"></div></div>
+}
+
+@code {
+    public int? Id { get; set; }
+    private bool _loading = true;
+
+    protected override void OnInitialized()
+    {
+        if (Id.HasValue)
+        {
+
+            //TODO: Add Blog display implementation
+
+            _loading = false;
+        }
+        else
+        {
+            _loading = false;
+        }
+    }
+}

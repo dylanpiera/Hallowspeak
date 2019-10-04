@@ -255,3 +255,59 @@ li.new-item:hover {
     max-width: 75%;
     z-index: 1;
 }
+
+/* Loading Animation */
+
+.loading {
+    width: 150px;
+    height: 150px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border-top: 10px solid #e74c3c;
+    position: relative;
+    animation: a1 3s linear infinite;
+}
+
+    .loading::before, .loading::after {
+        content: '';
+        width: 150px;
+        height: 150px;
+        position: absolute;
+        left: 0;
+        top: -10px;
+        box-sizing: border-box;
+        border-radius: 50%;
+    }
+
+    .loading::before {
+        border-top: 10px solid #e67e22;
+        transform: rotate(120deg);
+    }
+
+    .loading::after {
+        border-top: 10px solid #3498db;
+        transform: rotate(240deg);
+    }
+
+.loading-box {
+    justify-content: center;
+    display: flex;
+}
+
+    .loading-box span {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        color: #000;
+        text-align: center;
+        line-height: 150px;
+        /*animation: a2 2s linear infinite;*/
+    }
+
+@keyframes a1 {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* End of Loading Animation */
