@@ -1,5 +1,5 @@
 ﻿
-<div class="@(RenderCard ? "card" : string.Empty)">
+<div class="tabset @(RenderCard ? "card" : string.Empty)">
     <CascadingValue Value="this">
         <ul class="nav nav-tabs nav-pills nav-justified flex-column flex-sm-row">
             @ChildContent
@@ -10,9 +10,8 @@
     </div>
 </div>
 
-
-
 @code {
+#nullable enable
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public bool RenderCard { get; set; } = true;
 
@@ -42,4 +41,5 @@
             StateHasChanged();
         }
     }
+#nullable restore
 }

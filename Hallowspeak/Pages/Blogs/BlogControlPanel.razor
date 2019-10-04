@@ -1,0 +1,107 @@
+﻿@page "/blogs/{Id:int}/edit"
+@page "/blogs-cp"
+@page "/blogs-cp/{Id:int}"
+@inject DatabaseHelper databaseHelper
+
+@if (!_loading)
+{
+    @if (Id.HasValue)
+    {
+        //Display edit panel for selected page
+        <h5>Editing post with ID: @Posts[Id.Value]</h5>
+    }
+    else
+    {
+        <TabSet RenderCard="false">
+            <Tab Title="Table-view">
+                <div class="row">
+                    <div class="col">
+                        <table class="table" id="blogs">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (BlogPost Post in Posts)
+                                {
+                                    <tr>
+                                        <td><input type="checkbox" disabled/></td>
+                                        <td>@Post.Id</td>
+                                        <td>@Post.Title</td>
+                                        <td>@Post.Date_GMT.ToString()</td>
+                                        <td><a href="/blogs/@Post.Id/edit" class="btn btn-primary">Edit post</a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </Tab>
+            <Tab Title="Card-view">
+                <div class="row">
+                    @foreach (BlogPost post in Posts)
+                    {
+                        <div class="col-sm-12 col-md-6 col-lg-4">
+                            <div class="card" style="min-width:100%;">
+                                <img src="@post.Thumbnail" class="card-img-top" alt="@post.Title: Thumbnail" />
+                                <div class="card-body">
+                                    <h5 class="card-title">@post.Title</h5>
+                                    <p class="card-text">@post.Excerpt</p>
+                                    <a href="/blogs/@post.Id/edit" class="btn btn-primary">Edit post</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </Tab>
+        </TabSet>
+    }
+}
+else
+{
+    <div class="loading-box"><span>Loading...</span><div class="loading"></div></div>
+}
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+    private bool _loading = true;
+
+    public List<BlogPost> Posts { get; set; } = new List<BlogPost>();
+
+    protected override void OnInitialized()
+    {
+        if (Id.HasValue)
+        {
+
+            //TODO: Load edit Page
+
+            _loading = false;
+        }
+        else
+        {
+            if (databaseHelper.Enabled)
+            {
+
+            }
+            else
+            {
+                Posts = new List<BlogPost>()
+    {
+                    new BlogPost(0, "Welcome to posting blogs!", "There's not much to be found here..."),
+                    new BlogPost(1, "Welcome to posting blogs!", "There's not much to be found here...", "Although I do contain an Excerpt!"),
+                    new BlogPost(2, "Welcome to posting blogs!", "There's not much to be found here..."),
+                    new BlogPost(3, "Welcome to posting blogs!", "There's not much to be found here..."),
+                    new BlogPost(4, "Welcome to posting blogs!", "There's not much to be found here...")
+                };
+            }
+
+            _loading = false;
+        }
+    }
+}

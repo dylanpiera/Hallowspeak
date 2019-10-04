@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Hallowspeak.Shared.Tabs
 {
+#nullable enable
     public interface ITab
     {
         RenderFragment? ChildContent { get; }
     }
+#nullable restore
 }

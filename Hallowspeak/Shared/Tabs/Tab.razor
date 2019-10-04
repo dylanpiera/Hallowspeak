@@ -3,6 +3,7 @@
         <span @onclick="ActivateTab" class="nav-link @(TabSet?.ActiveTab == this ? "active" : string.Empty) @CssClass">@Title</span>
     </li>
 @code {
+#nullable enable
     [CascadingParameter] TabSet? TabSet { get; set; }
     [Parameter] public string? Title { get; set; }
     [Parameter] public string? CssClass { get; set; }
@@ -18,4 +19,5 @@
     {
         TabSet?.SetActiveTab(this);
     }
+#nullable restore
 }
