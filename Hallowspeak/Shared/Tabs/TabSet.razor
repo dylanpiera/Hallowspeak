@@ -1,0 +1,45 @@
+﻿
+<div class="@(RenderCard ? "card" : string.Empty)">
+    <CascadingValue Value="this">
+        <ul class="nav nav-tabs nav-pills nav-justified flex-column flex-sm-row">
+            @ChildContent
+        </ul>
+    </CascadingValue>
+    <div class="card-body">
+        @ActiveTab?.ChildContent
+    </div>
+</div>
+
+
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool RenderCard { get; set; } = true;
+
+    public ITab? ActiveTab { get; private set; }
+
+    public void AddTab(ITab tab)
+    {
+        if (ActiveTab == null)
+        {
+            SetActiveTab(tab);
+        }
+    }
+
+    public void RemoveTab(ITab tab)
+    {
+        if (ActiveTab == tab)
+        {
+            SetActiveTab(null);
+        }
+    }
+
+    public void SetActiveTab(ITab? tab)
+    {
+        if (ActiveTab != tab)
+        {
+            ActiveTab = tab;
+            StateHasChanged();
+        }
+    }
+}

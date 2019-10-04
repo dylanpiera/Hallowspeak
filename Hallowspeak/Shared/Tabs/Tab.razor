@@ -1,0 +1,21 @@
+﻿@implements ITab
+    <li class="nav-item">
+        <span @onclick="ActivateTab" class="nav-link @(TabSet?.ActiveTab == this ? "active" : string.Empty) @CssClass">@Title</span>
+    </li>
+@code {
+    [CascadingParameter] TabSet? TabSet { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        TabSet?.AddTab(this);
+    }
+
+    void ActivateTab()
+    {
+        TabSet?.SetActiveTab(this);
+    }
+}
