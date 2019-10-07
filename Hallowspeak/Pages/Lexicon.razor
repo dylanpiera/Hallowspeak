@@ -8,14 +8,15 @@
     <div class="col">
         <h3>Lexicon</h3>
     </div>
-    <AuthorizeView>
-        <Authorized>
-            <div class="col lexicon-controls">
+    <div class="col lexicon-controls">
+        <input type="text" placeholder="Filter... (Regex)" @bind="Query" />
+        <AuthorizeView>
+            <Authorized>
                 <button class="btn btn-success" @onclick="CreateNew">Add New Word</button>
                 <button class="btn btn-success" @onclick="() => BulkImport = true">Bulk Import</button>
-            </div>
-        </Authorized>
-    </AuthorizeView>
+            </Authorized>
+        </AuthorizeView>
+    </div>
 </div>
 @if (BulkImport)
 {
@@ -79,8 +80,8 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Data)
-            { //Display all Table Rows
+            @foreach (var item in Data.Where(entry => entry.KeyValues.Values.Any(value => new Regex(Query).IsMatch(value.Value))))
+            { //Display all Table Rows matching the filter
                 <LexiconRow ColID="@item.Id.ToString()" RowContent="@item" />
             }
         </tbody>
@@ -99,6 +100,8 @@
     private string LastSortKey { get; set; } = string.Empty;
 
     private bool SortedDescending { get; set; } = true;
+
+    private string Query { get; set; } = string.Empty;
 
     /// <summary>
     /// A List containing all Rows of data in the Lexicon.
