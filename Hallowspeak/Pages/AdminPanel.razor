@@ -1,0 +1,32 @@
+﻿@page "/adminpanel"
+@page "/admincp"
+
+<h3>
+    Admin Control Panel
+</h3>
+<AuthorizeView Roles="@(AuthLevel.Administrator.ToString())">
+    <Authorized>
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-danger" @onclick="CleanupAndExit">Restart Server</button>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <p>
+            Please log into an admin account.
+        </p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+
+@code {
+    void CleanupAndExit()
+    {
+        // TODO: cleanup
+        Environment.Exit(0);
+    }
+}
