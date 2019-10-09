@@ -1,4 +1,4 @@
-﻿@page "/adminpanel"
+@page "/adminpanel"
 @page "/admincp"
 
 <h3>
@@ -7,8 +7,21 @@
 <AuthorizeView Roles="@(AuthLevel.Administrator.ToString())">
     <Authorized>
         <div class="row">
-            <div class="col">
-                <button class="btn btn-danger" @onclick="CleanupAndExit">Restart Server</button>
+            <div class="col" style="width: 20%">
+                @if (!ShowRestartConfirmation)
+                {
+                    <button class="form-control btn btn-danger col-sm-4 col-md-2" @onclick="() => ShowRestartConfirmation = true">Restart Server</button>
+                }
+                else
+                {
+                    <p style="margin-bottom: 15px; text-align: center;" class="col-sm-4 col-md-2">
+                        Are you sure?
+                    </p>
+                    <div class="row">
+                        <button class="form-control btn btn-danger col-sm-2 col-md-1" @onclick="CleanupAndExit">Restart now</button>
+                        <button class="form-control btn btn-light col-sm-2 col-md-1" @onclick="() => ShowRestartConfirmation = false">Cancel</button>
+                    </div>
+                }
             </div>
         </div>
     </Authorized>
@@ -19,14 +32,13 @@
     </NotAuthorized>
 </AuthorizeView>
 
-
-
-
-
 @code {
+    public bool ShowRestartConfirmation { get; set; } = false;
+
     void CleanupAndExit()
     {
-        // TODO: cleanup
+        // TODO: more cleanup?
+        Program.StopServer();
         Environment.Exit(0);
     }
 }
