@@ -79,12 +79,21 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Data)
+            @foreach (var item in Data.Skip(CurrentPage * EntriesPerPage).Take(EntriesPerPage))
             { //Display all Table Rows
                 <LexiconRow ColID="@item.Id.ToString()" RowContent="@item" />
             }
         </tbody>
     </table>
+    <div>
+        @for (int p = 1; p <= Math.Ceiling((double)Data.Count / EntriesPerPage); ++p)
+        {
+            int temp = p - 1;
+            <a @onclick="() => CurrentPage = temp">
+                @p
+            </a>
+        }
+    </div>
 </div>
 
 @code {
@@ -99,6 +108,10 @@
     private string LastSortKey { get; set; } = string.Empty;
 
     private bool SortedDescending { get; set; } = true;
+
+    private const int EntriesPerPage = 10;
+
+    private int CurrentPage { get; set; } = 0;
 
     /// <summary>
     /// A List containing all Rows of data in the Lexicon.
@@ -242,7 +255,7 @@
             try
             {
                 Data = new List<LexiconItem>();
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 34; i++)
                 {
                     Random rand = new Random();
                     Data.Add(new LexiconItem(i) { KeyValues = new Dictionary<string, LexiconValue>() });
