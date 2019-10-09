@@ -80,18 +80,20 @@
         </thead>
         <tbody>
             @foreach (var item in Data.Skip(CurrentPage * EntriesPerPage).Take(EntriesPerPage))
-            { //Display all Table Rows
+            { //Display all Table Rows for current page
                 <LexiconRow ColID="@item.Id.ToString()" RowContent="@item" />
             }
         </tbody>
     </table>
-    <div>
+    <div id="pagination" class="row">
         @for (int p = 1; p <= Math.Ceiling((double)Data.Count / EntriesPerPage); ++p)
         {
             int temp = p - 1;
-            <a @onclick="() => CurrentPage = temp">
-                @p
-            </a>
+            <div class="col">
+                <a @onclick="() => CurrentPage = temp" style="text-decoration: @(temp == CurrentPage ? "underline" : "none")">
+                    @p
+                </a>
+            </div>
         }
     </div>
 </div>
