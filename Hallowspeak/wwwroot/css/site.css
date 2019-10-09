@@ -19,10 +19,10 @@ h1, h2, h3, .navbar-brand {
     transform: scaleY(1.15);
 }
 
-p {
+/*p {
     font-family: "Perpetua";
     font-size: 20px;
-}
+}*/
 
 h1::first-letter, h2::first-letter, h3::first-letter, .navbar-brand::first-letter {
     font-size: 1.25em;

@@ -1,15 +1,21 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Hallowspeak
 {
     public class Program
     {
-        public static void Main(string[] args)
+        private static CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            await CreateHostBuilder(args).Build().RunAsync(_cancellationTokenSource.Token);
         }
+
+        public static void StopServer() => _cancellationTokenSource.Cancel();
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
