@@ -64,10 +64,18 @@ button {
     color: white;
 }
 
-    #lexicon .blazor-context-menu {
-        background: #181822;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
+#lexicon .blazor-context-menu {
+    background: #181822;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+#blog-display {
+    padding: 15px;
+}
+
+#blog-display, #blog-display > * {
+    color: white;
+}
 
 a, .btn-link {
     color: #0366d6;

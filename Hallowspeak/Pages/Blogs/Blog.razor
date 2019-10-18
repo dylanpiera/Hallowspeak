@@ -1,11 +1,17 @@
 ﻿@page "/blogs/{Id:int}"
 @page "/blogs"
+@inject DatabaseHelper databaseHelper
 
 @if (!_loading)
 {
     @if (Id.HasValue)
     {
-
+        <h3>
+            @Post.Title
+        </h3>
+        <div id="blog-display" class="card">
+            @Post.Render()
+        </div>
     }
     else
     {
@@ -21,19 +27,20 @@ else
     [Parameter]
     public int? Id { get; set; }
     private bool _loading = true;
+    public List<BlogPost> Posts { get; set; } = new List<BlogPost>();
+    public BlogPost Post { get => Posts.FirstOrDefault(post => post.Id == Id); }
 
     protected override void OnInitialized()
     {
-        if (Id.HasValue)
+        Posts = new List<BlogPost>()
         {
+            new BlogPost(0, "Title test", "# Title\n## Subtitle\n### Subsubtitle"),
+            new BlogPost(1, "List test", "-\tUnordered\n-\tList\n-\tTest\n\n1.\tOrdered\n2.\tList\n3.\tTest"),
+            new BlogPost(2, "Quote test", "> This is a  \n> multiline quote"),
+            new BlogPost(3, "Code test", "```csharp\nCode.Block();\n// Comment\npublic static void Main(string[] args) { /* ... */ }\n```"),
+            new BlogPost(4, "Link test", "[Link!](https://zelda.fandom.com/wiki/Link)  \n![Image Test](https://steamcdn-a.akamaihd.net/steam/apps/367520/header.jpg?t=1569430762)")
+        };
 
-            //TODO: Add Blog display implementation
-
-            _loading = false;
-        }
-        else
-        {
-            _loading = false;
-        }
+        _loading = false;
     }
 }

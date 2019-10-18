@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Markdig;
+using Markdig.SyntaxHighlighting;
+using Microsoft.AspNetCore.Components;
 
 namespace Hallowspeak.Data.Models
 {
@@ -30,5 +30,7 @@ namespace Hallowspeak.Data.Models
             Thumbnail = thumbnail;
             Content = content;
         }
+
+        public MarkupString Render() => new MarkupString(Markdown.ToHtml(Content, new MarkdownPipelineBuilder().UseSyntaxHighlighting().Build()));
     }
 }
