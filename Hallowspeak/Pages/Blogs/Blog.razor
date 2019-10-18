@@ -6,16 +6,18 @@
 {
     @if (Id.HasValue)
     {
-        <h3>
-            @Post.Title
-        </h3>
-        <div id="blog-display" class="card">
-            @Post.Render()
-        </div>
+        <BlogPostDisplay Post=@Posts.FirstOrDefault(post => post.Id == Id.Value) />
     }
     else
     {
-
+        @foreach (var post in Posts)
+        {
+            <BlogPostDisplay Post=@post />
+            @if (post != Posts.Last())
+            {
+                <hr style="width: 100%; height: 2px; margin: 15px auto; background-color: white;" />
+            }
+        }
     }
 }
 else
@@ -28,7 +30,6 @@ else
     public int? Id { get; set; }
     private bool _loading = true;
     public List<BlogPost> Posts { get; set; } = new List<BlogPost>();
-    public BlogPost Post { get => Posts.FirstOrDefault(post => post.Id == Id); }
 
     protected override void OnInitialized()
     {
@@ -38,8 +39,11 @@ else
             new BlogPost(1, "List test", "-\tUnordered\n-\tList\n-\tTest\n\n1.\tOrdered\n2.\tList\n3.\tTest"),
             new BlogPost(2, "Quote test", "> This is a  \n> multiline quote"),
             new BlogPost(3, "Code test", "```csharp\nCode.Block();\n// Comment\npublic static void Main(string[] args) { /* ... */ }\n```"),
-            new BlogPost(4, "Link test", "[Link!](https://zelda.fandom.com/wiki/Link)  \n![Image Test](https://steamcdn-a.akamaihd.net/steam/apps/367520/header.jpg?t=1569430762)")
+            new BlogPost(4, "Link test", "[Link!](https://zelda.fandom.com/wiki/Link)  \n![Image Test](https://steamcdn-a.akamaihd.net/steam/apps/367520/header.jpg?t=1569430762)"),
+            new BlogPost(5, "Full test", "# Markdown blog post test\n## Text\nThis is a simple text block.  \nTest\n## Lists\n-\tUnordered\n-\tList\n-\tTest  \n1.\tOrdered\n2.\tList\n3.\tTest  \n## Quotes\n> This is a  \n> multiline quote\n## Code\n```csharp\nCode.Block();\n// Comment\npublic static void Main(string[] args) { /* ... */ }\n```\n## Links\n[Link!](https://zelda.fandom.com/wiki/Link)  \n![Image Test](https://steamcdn-a.akamaihd.net/steam/apps/367520/header.jpg?t=1569430762)")
         };
+
+        Posts = Posts.OrderByDescending(p => p.Date_GMT).ToList();
 
         _loading = false;
     }

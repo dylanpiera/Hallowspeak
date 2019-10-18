@@ -15,8 +15,19 @@ h1, h2, h3, .navbar-brand {
 }
 
 p {
-    font-family: "Perpetua";
+    /*font-family: "Perpetua";*/
     font-size: 20px;
+}
+
+blockquote {
+    font-family: 'Times New Roman';
+    font-style: italic;
+    background-color: #11141f;
+}
+
+.blog-post-header span {
+    font-style: italic;
+    text-align: right;
 }
 
 h1::first-letter, h2::first-letter, h3::first-letter, .navbar-brand::first-letter {

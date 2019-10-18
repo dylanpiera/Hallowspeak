@@ -1,0 +1,29 @@
+﻿@using Hallowspeak.Data.Models
+@using Markdig
+@inject MarkdownPipeline markdownPipeline
+
+<div class="row blog-post-header">
+    <h3 class="col-8">@Post.Title</h3>
+    <AuthorizeView Roles="@(AuthLevel.Writer.ToString()+" ,"+AuthLevel.Administrator.ToString())">
+        <span class="col"> 
+            ID: @Post.Id
+        </span>
+    </AuthorizeView>
+    <span class="col">
+        @Post.Date_GMT.ToLocalTime().ToString("HH:mm dd.MM.yyyy")
+    </span>
+</div>
+
+<div class="row" id="blog-display">
+    <div class="col card">
+        <br />
+        @RenderContent()
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public BlogPost Post { get; set; }
+
+    private MarkupString RenderContent() => new MarkupString(Markdown.ToHtml(Post.Content, markdownPipeline));
+}

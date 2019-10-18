@@ -16,8 +16,6 @@ namespace Hallowspeak.Data.Models
         /// Must be URL
         /// </summary>
         public string Thumbnail { get; set; }
-
-
         private DateTime _date;
         private string _excerpt;
 
@@ -30,7 +28,5 @@ namespace Hallowspeak.Data.Models
             Thumbnail = thumbnail;
             Content = content;
         }
-
-        public MarkupString Render() => new MarkupString(Markdown.ToHtml(Content, new MarkdownPipelineBuilder().UseSyntaxHighlighting().Build()));
     }
 }

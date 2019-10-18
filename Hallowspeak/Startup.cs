@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Markdig;
+using Markdig.SyntaxHighlighting;
 using System.Net.Http;
 
 namespace Hallowspeak
@@ -47,8 +49,8 @@ namespace Hallowspeak
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
-            services.AddSingleton<HttpContextAccessor>();
             services.AddSingleton<Floodchecker>();
+            services.AddSingleton(new MarkdownPipelineBuilder().UseSyntaxHighlighting().Build());
 
             #region Blazor Cookie Auth
             services.AddHttpContextAccessor();
