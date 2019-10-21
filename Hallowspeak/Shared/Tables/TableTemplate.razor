@@ -1,0 +1,77 @@
+﻿@using System.Collections.Generic
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                @foreach (var column in Collection.FirstOrDefault().Keys)
+                {
+                    <th>
+                        <a @onclick="() => SortCollectionBy(column)">
+                            @column 
+                            <span style="@(column == _lastSortKey ? "font-weight: bold; color: white;" : "color: #4e4e4e;")">
+                                @(column == _lastSortKey ? (_sortedDescending ? "↑" : "↓") : "↕")
+                            </span>
+                        </a>
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Collection
+                .Where(entry => entry.Values.Any(value => Filter(value))) // Filtering
+                .Skip(_currentPage * RowsPerPage).Take(RowsPerPage)) // Pagination
+            {
+                <TableRow RowContent=@row />
+            }
+        </tbody>
+    </table>
+    <div>
+        @for (int p = 1; p <= Math.Ceiling((double)Collection.Count / RowsPerPage); ++p)
+        {
+            int temp = p - 1;
+            <a @onclick="() => _currentPage = temp" class="btn btn-sm" style="text-decoration: @(temp == _currentPage ? "underline" : "none")">
+                @p
+            </a>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<Dictionary<string, object>> Collection { get; set; }
+
+    [Parameter]
+    public Func<object, bool> Filter { get; set; } = obj => true;
+
+    [Parameter]
+    public int RowsPerPage { get; set; } = 10;
+
+    private int _currentPage = 0;
+
+    private bool _sortedDescending;
+
+    private string _lastSortKey;
+
+    private void SortCollectionBy(string key)
+    {
+        if (_lastSortKey != key || _sortedDescending)
+        {
+            Collection = Collection.OrderBy(
+                entry => entry[key].ToString(),
+                StringComparer.InvariantCultureIgnoreCase
+            ).ToList();
+            _sortedDescending = false;
+        }
+        else
+        {
+            Collection = Collection.OrderByDescending(
+                entry => entry[key].ToString(),
+                StringComparer.InvariantCultureIgnoreCase
+            ).ToList();
+            _sortedDescending = true;
+        }
+        _lastSortKey = key;
+        this.StateHasChanged();
+    }
+}
