@@ -1,0 +1,29 @@
+﻿@page "/tabrowtest"
+
+<h3>TableRowTest</h3>
+
+<input type="text" @bind=Query placeholder="Filter" />
+<br />
+
+<Hallowspeak.Shared.Tables.TableTemplate Collection=@Data Filter="obj => new Regex(Query).IsMatch(obj.ToString())" RowsPerPage="7"/>
+
+@code {
+    public List<Dictionary<string, object>> Data { get; set; }
+
+    public string Query { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        Random rng = new Random();
+        Data = new List<Dictionary<string, object>>();
+        for (int i = 0; i < 32; ++i)
+        {
+            Dictionary<string, object> tmp = new Dictionary<string, object>();
+            tmp.Add("String value", new string(Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 16).Select(s => s[rng.Next(s.Length)]).ToArray()));
+            tmp.Add("Int value", rng.Next());
+            tmp.Add("Double value", rng.NextDouble());
+            tmp.Add("Bool value", rng.Next() % 2 == 0);
+            Data.Add(tmp);
+        }
+    }
+}
