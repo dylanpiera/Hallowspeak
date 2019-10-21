@@ -1,0 +1,51 @@
+﻿@page "/tablecp"
+@page "/database"
+@using Hallowspeak.Shared.Tables
+@using System.Collections.Generic
+@inject DatabaseHelper databaseHelper
+
+<h3>Tables</h3>
+
+@if (!_loading)
+{
+<select class="btn btn-light" @onchange="UpdateCurrentTable">
+    @foreach (string table in TableNames)
+    {
+        <option value="@table">
+            @table
+        </option>
+    }
+</select>
+<br />
+<TableTemplate Collection=@CurrentTable />
+}
+else
+{
+    <i>Loading...</i>
+}
+
+@code {
+    public List<string> TableNames { get; set; }
+    public List<Dictionary<string, object>> CurrentTable { get; set; }
+    private bool _loading = true;
+
+    private async Task UpdateCurrentTable(ChangeEventArgs e)
+    {
+        _loading = true;
+        using (var conn = databaseHelper.GetConnection())
+            CurrentTable = await databaseHelper.GetTable(conn, e.Value.ToString());
+        _loading = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using(var conn = databaseHelper.GetConnection())
+        {
+            TableNames = await databaseHelper.GetTableNames(conn);
+
+            CurrentTable = await databaseHelper.GetTable(conn, TableNames.FirstOrDefault());
+        }
+
+        _loading = false;
+    }
+}

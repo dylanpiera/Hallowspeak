@@ -81,5 +81,64 @@ namespace Hallowspeak.Helpers
             }
             return output;
         }
+
+        public async Task<List<string>> GetTableNames(MySqlConnection conn)
+        {
+            List<string> output = new List<string>();
+
+            try
+            {
+                await conn.OpenAsync();
+
+                MySqlCommand cmd = new MySqlCommand("SHOW tables", conn);
+
+                using (MySqlDataReader reader = (MySqlDataReader)await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        output.Add(reader.GetString(0));
+                    }
+                }
+            }
+            catch {}
+            finally
+            {
+                await conn.CloseAsync();
+            }
+            return output;
+        }
+
+        public async Task<List<Dictionary<string, object>>> GetTable(MySqlConnection conn, string tableName)
+        {
+            List<Dictionary<string, object>> output = new List<Dictionary<string, object>>();
+
+            try
+            {
+                await conn.OpenAsync();
+
+                MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `{tableName}`", conn);
+
+                using (MySqlDataReader reader = (MySqlDataReader)await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Dictionary<string, object> tmp = new Dictionary<string, object>();
+
+                        for (int i = 0; i < reader.FieldCount; ++i)
+                        {
+                            tmp.Add(reader.GetName(i), reader.GetValue(i));
+                        }
+
+                        output.Add(tmp);
+                    }
+                }
+            }
+            catch { }
+            finally
+            {
+                await conn.CloseAsync();
+            }
+            return output;
+        }
     }
 }
