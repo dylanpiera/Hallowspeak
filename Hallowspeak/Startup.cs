@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System.Net.Http;
 
@@ -72,7 +74,11 @@ namespace Hallowspeak
                 app.UseHsts();
             }
 
+            var provider = new FileExtensionContentTypeProvider();
+            provider.Mappings[".less"] = "stylesheet/less";
+
             app.UseHttpsRedirection();
+            app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider});
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
