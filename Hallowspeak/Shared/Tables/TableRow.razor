@@ -1,0 +1,15 @@
+﻿@using System.Collections.Generic
+
+<tr>
+    @foreach (object property in RowContent.Values)
+    {
+        <td>
+            @property.ToString()
+        </td>
+    }
+</tr>
+
+@code {
+    [Parameter]
+    public Dictionary<string, object> RowContent { get; set; }
+}
