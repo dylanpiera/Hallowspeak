@@ -116,7 +116,8 @@ namespace Hallowspeak.Helpers
             {
                 await conn.OpenAsync();
 
-                MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `{tableName}`", conn);
+                MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `@table`", conn);
+                cmd.Parameters.AddWithValue("@table", tableName);
 
                 using (MySqlDataReader reader = (MySqlDataReader)await cmd.ExecuteReaderAsync())
                 {
