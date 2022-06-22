@@ -9,7 +9,7 @@
     <PackageReference Include="Blazor.ContextMenu" Version="0.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.0.0-rc1.19457.4" />
     <PackageReference Include="MySql.Data" Version="8.0.17" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="RestSharp" Version="106.6.10" />
   </ItemGroup>
 
